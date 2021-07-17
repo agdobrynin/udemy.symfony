@@ -6,11 +6,19 @@ use App\Entity\BlogPost;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     private const REFERENCE_TEST_USER_1 = 'test.user.1';
     private const REFERENCE_TEST_USER_2 = 'test.user.2';
+
+    private $userPasswordHasher;
+
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+    {
+        $this->userPasswordHasher = $userPasswordHasher;
+    }
 
     public function load(ObjectManager $manager)
     {
@@ -50,8 +58,8 @@ class AppFixtures extends Fixture
         $user1 = (new User())
             ->setLogin('alex.d')
             ->setName('Alex D.')
-            ->setEmail('alex.d@gmail.com')
-            ->setPassword('qwerty#2');
+            ->setEmail('alex.d@gmail.com');
+        $user1->setPassword($this->userPasswordHasher->hashPassword($user1, 'qwerty#2'));
 
         $this->addReference(self::REFERENCE_TEST_USER_1, $user1);
         $manager->persist($user1);
@@ -59,8 +67,8 @@ class AppFixtures extends Fixture
         $user2 = (new User())
             ->setLogin('klim.v')
             ->setName('Klim Voroshilov')
-            ->setEmail('klim@mail.ru')
-            ->setPassword('2#qwerty');
+            ->setEmail('klim@mail.ru');
+        $user2->setPassword($this->userPasswordHasher->hashPassword($user2, '#2qwerty'));
 
         $this->addReference(self::REFERENCE_TEST_USER_2, $user2);
         $manager->persist($user2);
