@@ -6,18 +6,25 @@ use App\Entity\BlogPost;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    private const REFERENCE_TEST_USER_1 = 'test.user.1';
-    private const REFERENCE_TEST_USER_2 = 'test.user.2';
+    private const MAX_BLOG_POST = 50;
+    private const MAX_USERS = 5;
 
+    /**
+     * @var string[]
+     */
+    private $referenceUserKeys = [];
     private $userPasswordHasher;
+    private $faker;
 
     public function __construct(UserPasswordHasherInterface $userPasswordHasher)
     {
         $this->userPasswordHasher = $userPasswordHasher;
+        $this->faker = Factory::create();
     }
 
     public function load(ObjectManager $manager)
@@ -28,21 +35,16 @@ class AppFixtures extends Fixture
 
     public function loadBlogPosts(ObjectManager $manager)
     {
-        $blogPost = new BlogPost();
-        $blogPost->setTitle('Yess');
-        $blogPost->setAuthor($this->getReference(self::REFERENCE_TEST_USER_1));
-        $blogPost->setContent('Eligendi non quis exercitationem culpa nesciunt nihil aut nostrum explicabo.');
-        $blogPost->setCreatedAt(new \DateTime());
-        $blogPost->setSlug('lo-lo');
-        $manager->persist($blogPost);
-
-        $blogPost = new BlogPost();
-        $blogPost->setTitle('Post forman');
-        $blogPost->setAuthor($this->getReference(self::REFERENCE_TEST_USER_2));
-        $blogPost->setContent('Lorem ipsum dolor sit amet, consectetur adipisicing elit.');
-        $blogPost->setCreatedAt(new \DateTime());
-        $blogPost->setSlug('ko-ko');
-        $manager->persist($blogPost);
+        for ($i = 0; $i < self::MAX_BLOG_POST; $i += 1) {
+            $blogPost = new BlogPost();
+            $blogPost->setTitle($this->faker->text(30));
+            $refKey = array_rand($this->referenceUserKeys);
+            $blogPost->setAuthor($this->getReference($this->referenceUserKeys[$refKey]));
+            $blogPost->setContent($this->faker->text());
+            $blogPost->setCreatedAt($this->faker->dateTimeThisYear());
+            $blogPost->setSlug($this->faker->slug);
+            $manager->persist($blogPost);
+        }
 
         $manager->flush();
     }
@@ -55,23 +57,18 @@ class AppFixtures extends Fixture
 
     public function loadUsers(ObjectManager $manager)
     {
-        $user1 = (new User())
-            ->setLogin('alex.d')
-            ->setName('Alex D.')
-            ->setEmail('alex.d@gmail.com');
-        $user1->setPassword($this->userPasswordHasher->hashPassword($user1, 'qwerty#2'));
+        for ($i = 0; $i < self::MAX_USERS; $i+=1) {
+            $user = (new User())
+                ->setLogin($this->faker->userName)
+                ->setName($this->faker->name)
+                ->setEmail($this->faker->email);
 
-        $this->addReference(self::REFERENCE_TEST_USER_1, $user1);
-        $manager->persist($user1);
-
-        $user2 = (new User())
-            ->setLogin('klim.v')
-            ->setName('Klim Voroshilov')
-            ->setEmail('klim@mail.ru');
-        $user2->setPassword($this->userPasswordHasher->hashPassword($user2, '#2qwerty'));
-
-        $this->addReference(self::REFERENCE_TEST_USER_2, $user2);
-        $manager->persist($user2);
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, 'qwerty#2'));
+            $refKey = $this->faker->randomAscii;
+            $this->addReference($refKey, $user);
+            $this->referenceUserKeys[] = $refKey;
+            $manager->persist($user);
+        }
 
         $manager->flush();
     }
