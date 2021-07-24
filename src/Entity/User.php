@@ -77,7 +77,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255)
      * @Groups({"read"})
      * @Assert\NotBlank(message="Укажите полное имя пользователя")
-     * @Assert\Length(min=5)
+     * @Assert\Length(min=5, minMessage="Минимальная далинна имени пользователя {{ limit }} символов")
      */
     private $name;
 
