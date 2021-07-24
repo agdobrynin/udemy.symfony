@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -34,23 +35,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=20)
+     * @Assert\NotBlank(message="Укажите логин пользователя")
+     * @Assert\Length(
+     *     min=5, minMessage="Логин должен быть более {{ limit }} символов",
+     *     max=20, maxMessage="Максимальная длинна логина {{ limit }} символов",
+     * )
      */
     private $login;
-
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Укажите пароль пользователя")
+     * @Assert\Length(
+     *     min=6, minMessage="Минимальная длинна пароля {{ limit }} символов",
+     *     max=255, maxMessage="Слишком большая длинна пароля. Максимальное количество символов {{ limit }}"
+     * )
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"read"})
+     * @Assert\NotBlank(message="Укажите email пользователя")
+     * @Assert\Email(message="Указанный email некорректный")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"read"})
+     * @Assert\NotBlank(message="Укажите полное имя пользователя")
+     * @Assert\Length(min=5)
      */
     private $name;
 
