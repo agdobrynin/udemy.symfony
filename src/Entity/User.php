@@ -57,6 +57,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
+     * @Assert\NotBlank(message="Повторите пароль")
+     * @Assert\Expression(
+     *     "this.getPassword() === this.getPasswordRepeated()",
+     *     message="Пароли не совпадают"
+     * )
+     */
+    private $passwordRepeated;
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"read"})
      * @Assert\NotBlank(message="Укажите email пользователя")
@@ -179,5 +188,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __call($name, $arguments)
     {
         // TODO: Implement @method string getUserIdentifier()
+    }
+
+    public function getPasswordRepeated(): ?string
+    {
+        return $this->passwordRepeated;
+    }
+
+    public function setPasswordRepeated(?string $passwordRepeated = null): void
+    {
+        $this->passwordRepeated = $passwordRepeated;
     }
 }
