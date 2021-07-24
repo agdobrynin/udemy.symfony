@@ -9,12 +9,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
  *     itemOperations={"get"},
- *     collectionOperations={}
+ *     collectionOperations={},
+ *     normalizationContext={
+ *          "groups" = {"read"}
+ *     }
  * )
  * @method string getUserIdentifier()
  */
@@ -24,6 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
     private $id;
 
@@ -39,21 +44,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\BlogPost", mappedBy="author")
+     * @Groups({"read"})
      */
     private $posts;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
+     * @Groups({"read"})
      */
     private $comments;
 
@@ -126,6 +135,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @Groups({"read"})
+     */
     public function getRoles(): array
     {
         return ['ROLE_USER'];
