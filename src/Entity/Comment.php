@@ -41,7 +41,7 @@ class Comment
     private $author;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Comment")
+     * @ORM\ManyToOne(targetEntity="App\Entity\BlogPost")
      * @ORM\JoinColumn(nullable=false)
      */
     private $post;
