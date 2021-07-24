@@ -49,6 +49,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     min=6, minMessage="Минимальная длинна пароля {{ limit }} символов",
      *     max=255, maxMessage="Слишком большая длинна пароля. Максимальное количество символов {{ limit }}"
      * )
+     * @Assert\Regex(
+     *     pattern="/(?=.*[a-zа-яё])(?=.*[A-ZА-ЯЁ])(?=.*(.*\d){2})/",
+     *     message="Пароль должен содержать одну заглавную букву, две цифры"
+     * )
      */
     private $password;
 
