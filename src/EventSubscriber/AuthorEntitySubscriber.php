@@ -25,7 +25,7 @@ final class AuthorEntitySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::VIEW => ['getAuthUser', EventPriorities::PRE_WRITE]
+            KernelEvents::VIEW => ['getAuthUser', EventPriorities::PRE_VALIDATE]
         ];
     }
 

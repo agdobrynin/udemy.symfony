@@ -9,6 +9,7 @@ use App\Repository\BlogPostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -19,6 +20,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "get",
  *          "post"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY')"}
  *      }
+ * )
+ * @UniqueEntity(
+ *     fields={"slug", "author"},
+ *     errorPath="slug",
+ *     message="Для этого автора имя файла {{ value }} (slug) уже используется. Придуймайте другое имя файла."
  * )
  */
 class BlogPost
