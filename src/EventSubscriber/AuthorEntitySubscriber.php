@@ -33,12 +33,12 @@ final class AuthorEntitySubscriber implements EventSubscriberInterface
     {
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
-        $authUser = $this->tokenStorage->getToken()->getUser();
+        $token = $this->tokenStorage->getToken();
 
-        if (!$entity instanceof BlogPost || Request::METHOD_POST !== $method) {
+        if (null === $token || !$entity instanceof BlogPost || Request::METHOD_POST !== $method) {
             return;
         }
 
-        $entity->setAuthor($authUser);
+        $entity->setAuthor($token->getUser());
     }
 }
