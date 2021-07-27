@@ -128,6 +128,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->login;
     }
 
+    public function getUsername(): ?string
+    {
+        return $this->getLogin();
+    }
+
     public function setLogin(string $login): self
     {
         $this->login = $login;
@@ -187,11 +192,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
-    }
-
-    public function getUsername()
-    {
-        // TODO: Implement getUsername() method.
     }
 
     public function __call($name, $arguments)
