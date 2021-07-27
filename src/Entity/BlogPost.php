@@ -9,12 +9,16 @@ use App\Repository\BlogPostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
  * @ApiResource(
  *     itemOperations={"get"},
- *     collectionOperations={"get"}
+ *     collectionOperations={
+ *          "get",
+ *          "post"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY')"}
+ *      }
  * )
  */
 class BlogPost
@@ -28,6 +32,7 @@ class BlogPost
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(min=10)
      */
     private $title;
 
@@ -39,16 +44,25 @@ class BlogPost
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotBlank
+     * @Assert\GreaterThanOrEqual("today")
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Length(min=140)
      */
     private $content;
 
     /**
      * @ORM\Column(type="string", length="255", nullable="true")
+     * @Assert\NotBlank
+     * @Assert\Length(min=5)
+     * @Assert\Regex(
+     *     pattern="/^([a-z_\-0-9]+)$/",
+     *     message="Имя публикации может содержать латинские буквы в нижнем регистре (маленькие буквы), цифры, тире"
+     * )
      */
     private $slug;
 
