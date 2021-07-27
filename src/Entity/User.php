@@ -196,7 +196,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __call($name, $arguments)
     {
-        // TODO: Implement @method string getUserIdentifier()
+        return $this->getLogin();
     }
 
     public function getPasswordRepeated(): ?string
