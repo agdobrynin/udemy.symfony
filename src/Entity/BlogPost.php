@@ -10,12 +10,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
  * @ApiResource(
- *     itemOperations={"get"},
+ *     itemOperations={
+ *          "get",
+ *          "put"={
+ *              "denormalization_context"={"groups"={"put:write"}},
+ *              "normalization_context"={"groups"={"put:read"}},
+ *          }
+ *     },
  *     collectionOperations={
  *          "get",
  *          "post"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY')"}
@@ -39,12 +46,14 @@ class BlogPost
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\Length(min=10)
+     * @Groups({"put:write", "put:read"})
      */
     private $title;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="post")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups ("put:read")
      */
     private $author;
 
@@ -52,12 +61,14 @@ class BlogPost
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank
      * @Assert\GreaterThanOrEqual("today")
+     * @Groups({"put:write", "put:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\Length(min=140)
+     * @Groups({"put:write", "put:read"})
      */
     private $content;
 
@@ -69,6 +80,7 @@ class BlogPost
      *     pattern="/^([a-z_\-0-9]+)$/",
      *     message="Имя публикации может содержать латинские буквы в нижнем регистре (маленькие буквы), цифры, тире"
      * )
+     * @Groups("put:read")
      */
     private $slug;
 
