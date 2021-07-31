@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  * @ApiResource(
  *     itemOperations={
  *          "get",
@@ -60,14 +61,13 @@ class BlogPost
 
     /**
      * @ORM\Column(type="datetime")
-     * @Assert\NotBlank
-     * @Assert\GreaterThanOrEqual("today")
+     * @Groups({"put:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Assert\NotBlank
+     * @Groups({"put:read"})
      */
     private $updateAt;
 
@@ -98,7 +98,6 @@ class BlogPost
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->updateAt = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -130,20 +129,16 @@ class BlogPost
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getUpdateAt(): \DateTime
+    public function getUpdateAt(): \DateTimeInterface
     {
         return $this->updateAt;
     }
 
-    /**
-     * @param \DateTime $updateAt
-     */
-    public function setUpdateAt(\DateTime $updateAt): void
+    public function setUpdateAt(\DateTimeInterface $updateAt): self
     {
         $this->updateAt = $updateAt;
+
+        return $this;
     }
 
 
@@ -184,5 +179,18 @@ class BlogPost
     public function getComment(): Collection
     {
         return $this->comments;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setDatesAutomatically()
+    {
+        $this->setUpdateAt(new \DateTime());
+
+        if ($this->getCreatedAt() === null) {
+            $this->setCreatedAt(new \DateTime());
+        }
     }
 }
