@@ -62,9 +62,14 @@ class BlogPost
      * @ORM\Column(type="datetime")
      * @Assert\NotBlank
      * @Assert\GreaterThanOrEqual("today")
-     * @Groups({"put:write", "put:read"})
      */
     private $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Assert\NotBlank
+     */
+    private $updateAt;
 
     /**
      * @ORM\Column(type="text")
@@ -93,6 +98,7 @@ class BlogPost
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->updateAt = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -123,6 +129,23 @@ class BlogPost
 
         return $this;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdateAt(): \DateTime
+    {
+        return $this->updateAt;
+    }
+
+    /**
+     * @param \DateTime $updateAt
+     */
+    public function setUpdateAt(\DateTime $updateAt): void
+    {
+        $this->updateAt = $updateAt;
+    }
+
 
     public function getContent(): ?string
     {
