@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "put"={
  *              "denormalization_context"={"groups"={"put:write"}},
  *              "normalization_context"={"groups"={"put:read"}},
+ *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() === user"
  *          }
  *     },
  *     collectionOperations={
