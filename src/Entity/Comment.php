@@ -78,7 +78,7 @@ class Comment implements AuthorEntityInterface
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"comment:create", "comment:read", "get-comments-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author"})
      * @Assert\NotBlank
      */
     private $author;
