@@ -31,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     subresourceOperations={
  *         "api_blog_posts_comments_get_subresource"={
  *             "normalization_context"={
- *                 "groups"={"get-comment-with-author"}
+ *                 "groups"={"get-comments-with-author"}
  *             }
  *         }
  *     },
@@ -45,13 +45,13 @@ class Comment implements AuthorEntityInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"comment:read", "get-comment-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"comment:update", "comment:create", "comment:read", "get-comment-with-author"})
+     * @Groups({"comment:update", "comment:create", "comment:read", "get-comments-with-author"})
      * @Assert\NotBlank
      * @Assert\Length(min=25)
      */
@@ -59,26 +59,26 @@ class Comment implements AuthorEntityInterface
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"comment:read", "get-comment-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"comment:read", "get-comment-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author"})
      */
     private $updateAt;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"comment:read", "get-comment-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author"})
      */
     private $isPublished;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"comment:create", "comment:read", "get-comment-with-author"})
+     * @Groups({"comment:create", "comment:read", "get-comments-with-author"})
      * @Assert\NotBlank
      */
     private $author;
