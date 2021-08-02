@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     itemOperations={
  *          "get",
  *          "put"={
- *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
+ *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() === user",
  *              "denormalization_context"={"groups"={"comment:update"}},
  *          },
  *     },
