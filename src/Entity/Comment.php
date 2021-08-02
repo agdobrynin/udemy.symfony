@@ -7,6 +7,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,7 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=CommentRepository::class)
  * @ORM\HasLifecycleCallbacks()
  */
-class Comment
+class Comment implements AuthorEntityInterface
 {
     /**
      * @ORM\Id
@@ -129,9 +130,9 @@ class Comment
         return $this->author;
     }
 
-    public function setAuthor(User $author): self
+    public function setAuthor(UserInterface $user): AuthorEntityInterface
     {
-        $this->author = $author;
+        $this->author = $user;
 
         return $this;
     }

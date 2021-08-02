@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
+use App\Entity\AuthorEntityInterface;
 use App\Entity\BlogPost;
 use App\Entity\Comment;
 use App\Entity\User;
@@ -102,7 +103,7 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    private function getRandomUser(): User
+    private function getRandomUser(): AuthorEntityInterface
     {
         $refKey = array_rand($this->referenceUserKeys);
 
