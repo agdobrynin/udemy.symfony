@@ -165,12 +165,29 @@ class Comment implements AuthorEntityInterface
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function setDatesAutomatically()
+    public function setDatesAutomatically(): void
     {
         $this->setUpdateAt(new \DateTime());
 
         if ($this->getCreatedAt() === null) {
             $this->setCreatedAt(new \DateTime());
         }
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setIsPublishedAutomatically(): void
+    {
+        if (in_array(Roles::USER, $this->getAuthor()->getRoles())) {
+            $this->setIsPublished(false);
+
+            return;
+        }
+
+        // TODO когда появятся роли то осуществить проверку что админы могут сразу публиковать,
+        // а пользователи будут добавлять комментарии с пре-модерацией.
+        $this->setIsPublished(true);
     }
 }
