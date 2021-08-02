@@ -18,11 +18,11 @@ class AppFixtures extends Fixture
     private const MAX_BLOG_POST = 50;
     private const MAX_COMMENTS = 25;
     private const USERS = [
-        ['email' => 'nyasia01@hotmail.com', 'login' => 'nyasia', 'password' => 'PopLop245'],
-        ['email' => 'utillman@rohan.org', 'login' => 'utillman', 'password' => '22KokLut1'],
-        ['email' => 'kebert@connelly.info', 'login' => 'kebert', 'password' => '55UniNorm1'],
-        ['email' => 'vanessa90@gmail.com', 'login' => 'vanessa', 'password' => 'YariLo123'],
-        ['email' => 'hauck.celia@friesen.com', 'login' => 'hauck.celia', 'password' => 'JoinUsLite568'],
+        ['email' => 'nyasia01@hotmail.com', 'login' => 'nyasia', 'password' => 'PopLop245', 'roles' => [User::ROLE_ADMIN]],
+        ['email' => 'utillman@rohan.org', 'login' => 'utillman', 'password' => '22KokLut1', 'roles' => [User::ROLE_USER, User::ROLE_MODERATOR]],
+        ['email' => 'kebert@connelly.info', 'login' => 'kebert', 'password' => '55UniNorm1', 'roles' => [User::ROLE_USER]],
+        ['email' => 'vanessa90@gmail.com', 'login' => 'vanessa', 'password' => 'YariLo123', 'roles' => [User::ROLE_MODERATOR]],
+        ['email' => 'hauck.celia@friesen.com', 'login' => 'hauck.celia', 'password' => 'JoinUsLite568', 'roles' => [User::ROLE_USER]],
     ];
 
     /**
@@ -85,13 +85,14 @@ class AppFixtures extends Fixture
     public function loadUsers(ObjectManager $manager)
     {
         foreach (self::USERS as $index => $userSource) {
-            $login=''; $email=''; $password='';
+            $login=''; $email=''; $password=''; $roles=[];
             extract($userSource);
 
             $user = (new User())
                 ->setLogin($login)
                 ->setEmail($email)
-                ->setName($this->faker->name);
+                ->setName($this->faker->name)
+                ->setRoles($roles);
 
             $user->setPassword($this->userPasswordHasher->hashPassword($user, $password));
             $refKey = 'user.id.' . $index;
@@ -103,7 +104,7 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    private function getRandomUser(): AuthorEntityInterface
+    private function getRandomUser(): User
     {
         $refKey = array_rand($this->referenceUserKeys);
 
