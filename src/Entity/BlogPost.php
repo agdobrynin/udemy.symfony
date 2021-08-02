@@ -28,7 +28,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *     collectionOperations={
  *          "get",
- *          "post"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY')"}
+ *          "post"={
+ *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY')",
+ *              "denormalization_context"={"groups"={"post:write"}},
+ *          }
  *      }
  * )
  * @UniqueEntity(
@@ -49,7 +52,7 @@ class BlogPost implements AuthorEntityInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\Length(min=10)
-     * @Groups({"put:write", "put:read"})
+     * @Groups({"put:write", "put:read", "post:write"})
      */
     private $title;
 
@@ -75,7 +78,7 @@ class BlogPost implements AuthorEntityInterface
     /**
      * @ORM\Column(type="text")
      * @Assert\Length(min=140)
-     * @Groups({"put:write", "put:read"})
+     * @Groups({"put:write", "put:read", "post:write"})
      */
     private $content;
 
@@ -87,7 +90,7 @@ class BlogPost implements AuthorEntityInterface
      *     pattern="/^([a-z_\-0-9]+)$/",
      *     message="Имя публикации может содержать латинские буквы в нижнем регистре (маленькие буквы), цифры, тире"
      * )
-     * @Groups("put:read")
+     * @Groups({"put:read", "post:write"})
      */
     private $slug;
 
