@@ -15,8 +15,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private const MAX_BLOG_POST = 50;
-    private const MAX_USERS = 5;
     private const MAX_COMMENTS = 25;
+    private const USERS = [
+        ['email' => 'nyasia01@hotmail.com', 'login' => 'nyasia', 'password' => 'PopLop245'],
+        ['email' => 'utillman@rohan.org', 'login' => 'utillman', 'password' => '22KokLut1'],
+        ['email' => 'kebert@connelly.info', 'login' => 'kebert', 'password' => '55UniNorm1'],
+        ['email' => 'vanessa90@gmail.com', 'login' => 'vanessa', 'password' => 'YariLo123'],
+        ['email' => 'hauck.celia@friesen.com', 'login' => 'hauck.celia', 'password' => 'JoinUsLite568'],
+    ];
 
     /**
      * @var string[]
@@ -79,14 +85,17 @@ class AppFixtures extends Fixture
 
     public function loadUsers(ObjectManager $manager)
     {
-        for ($i = 0; $i < self::MAX_USERS; $i += 1) {
-            $user = (new User())
-                ->setLogin($this->faker->userName)
-                ->setName($this->faker->name)
-                ->setEmail($this->faker->email);
+        foreach (self::USERS as $index => $userSource) {
+            $login=''; $email=''; $password='';
+            extract($userSource);
 
-            $user->setPassword($this->userPasswordHasher->hashPassword($user, 'qwerty#2'));
-            $refKey = 'user.id.' . $i;
+            $user = (new User())
+                ->setLogin($login)
+                ->setEmail($email)
+                ->setName($this->faker->name);
+
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, $password));
+            $refKey = 'user.id.' . $index;
             $this->addReference($refKey, $user);
             $this->referenceUserKeys[] = $refKey;
             $manager->persist($user);
