@@ -58,7 +58,7 @@ class BlogPost implements AuthorEntityInterface
     private $title;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="post")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
      * @Groups ("put:read")
      */
