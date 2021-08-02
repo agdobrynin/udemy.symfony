@@ -59,7 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"get"})
+     * @Groups({"get", "get-comment-with-author"})
      */
     private $id;
 
@@ -108,7 +108,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get", "create", "update"})
+     * @Groups({"get", "create", "update", "get-comment-with-author"})
      * @Assert\NotBlank(message="Укажите полное имя пользователя")
      * @Assert\Length(min=5, minMessage="Минимальная далинна имени пользователя {{ limit }} символов")
      */
