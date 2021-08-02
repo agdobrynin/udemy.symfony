@@ -55,6 +55,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_MODERATOR = 'ROLE_MODERATOR';
+
+    public const DEFAULT_ROLES = [self::ROLE_USER];
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -107,6 +113,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $email;
 
     /**
+     * @ORM\Column(type="simple_array", length="255")
+     */
+    private $roles;
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"get", "create", "update", "get-comments-with-author", "get:read_post:with_author"})
      * @Assert\NotBlank(message="Укажите полное имя пользователя")
@@ -130,6 +141,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->roles = self::DEFAULT_ROLES;
     }
 
     public function getPosts(): Collection
@@ -205,7 +217,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        return [Roles::USER];
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
     }
 
     public function getSalt(): ?string

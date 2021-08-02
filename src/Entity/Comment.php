@@ -187,9 +187,8 @@ class Comment implements AuthorEntityInterface
      */
     public function setIsPublishedAutomatically(): void
     {
-        // TODO когда появятся роли то осуществить проверку что админы могут сразу публиковать,
-        // а пользователи будут добавлять комментарии с пре-модерацией.
-        if (in_array(Roles::USER, $this->getAuthor()->getRoles())) {
+        $rolesAvailablePublishComments = [User::ROLE_ADMIN, User::ROLE_MODERATOR];
+        if (array_intersect($rolesAvailablePublishComments, $this->getAuthor()->getRoles())) {
             $this->setIsPublished(true);
 
             return;
