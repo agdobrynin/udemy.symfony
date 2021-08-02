@@ -50,8 +50,7 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < self::MAX_BLOG_POST; $i += 1) {
             $blogPost = new BlogPost();
             $blogPost->setTitle($this->faker->text(30));
-            $refKey = array_rand($this->referenceUserKeys);
-            $blogPost->setAuthor($this->getReference($this->referenceUserKeys[$refKey]));
+            $blogPost->setAuthor($this->getRandomUser());
             $blogPost->setContent($this->faker->realText());
             $blogPost->setCreatedAt($this->faker->dateTimeThisYear());
             $blogPost->setSlug($this->faker->slug);
@@ -68,11 +67,10 @@ class AppFixtures extends Fixture
     {
         foreach ($this->referenceBlogPostKeys as $refKeyBlogPost) {
             for ($i = 0; $i < rand(1, self::MAX_COMMENTS); $i += 1) {
-                $userRefKey = $this->referenceUserKeys[array_rand($this->referenceUserKeys)];
 
                 $comment = (new Comment())
                     ->setPost($this->getReference($refKeyBlogPost))
-                    ->setAuthor($this->getReference($userRefKey))
+                    ->setAuthor($this->getRandomUser())
                     ->setCreatedAt($this->faker->dateTimeThisMonth())
                     ->setContent($this->faker->text)
                     ->setIsPublished(true);
@@ -102,5 +100,12 @@ class AppFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    private function getRandomUser(): User
+    {
+        $refKey = array_rand($this->referenceUserKeys);
+
+        return $this->getReference($this->referenceUserKeys[$refKey]);
     }
 }
