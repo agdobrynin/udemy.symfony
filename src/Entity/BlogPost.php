@@ -20,7 +20,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks()
  * @ApiResource(
  *     itemOperations={
- *          "get",
+ *          "get"={
+ *              "normalization_context"={"groups"={"get:read_post:with_author"}},
+ *          },
  *          "put"={
  *              "denormalization_context"={"groups"={"put:write"}},
  *              "normalization_context"={"groups"={"put:read"}},
@@ -47,39 +49,40 @@ class BlogPost implements AuthorEntityInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get:read_post:with_author"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\Length(min=10)
-     * @Groups({"put:write", "put:read", "post:write"})
+     * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author"})
      */
     private $title;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups ("put:read")
+     * @Groups ({"put:read", "get:read_post:with_author"})
      */
     private $author;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"put:read"})
+     * @Groups({"put:read", "get:read_post:with_author"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"put:read"})
+     * @Groups({"put:read", "get:read_post:with_author"})
      */
     private $updateAt;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\Length(min=140)
-     * @Groups({"put:write", "put:read", "post:write"})
+     * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author"})
      */
     private $content;
 
@@ -91,13 +94,14 @@ class BlogPost implements AuthorEntityInterface
      *     pattern="/^([a-z_\-0-9]+)$/",
      *     message="Имя публикации может содержать латинские буквы в нижнем регистре (маленькие буквы), цифры, тире"
      * )
-     * @Groups({"put:read", "post:write"})
+     * @Groups({"put:read", "post:write", "get:read_post:with_author"})
      */
     private $slug;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="post")
      * @ApiSubresource
+     * @Groups({"get:read_post:with_author"})
      */
     private $comments;
 

@@ -108,7 +108,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get", "create", "update", "get-comments-with-author"})
+     * @Groups({"get", "create", "update", "get-comments-with-author", "get:read_post:with_author"})
      * @Assert\NotBlank(message="Укажите полное имя пользователя")
      * @Assert\Length(min=5, minMessage="Минимальная далинна имени пользователя {{ limit }} символов")
      */
