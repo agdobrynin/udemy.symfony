@@ -60,6 +60,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const ROLE_MODERATOR = 'ROLE_MODERATOR';
 
     public const DEFAULT_ROLES = [self::ROLE_USER];
+    public const ALL_ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_USER,
+        self::ROLE_MODERATOR,
+    ];
 
     /**
      * @ORM\Id

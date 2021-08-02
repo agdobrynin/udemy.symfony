@@ -29,6 +29,8 @@ class AppFixtures extends Fixture
      * @var string[]
      */
     private $referenceUserKeys = [];
+    private $referenceUserKeysForComment;
+    private $referenceUserKeysForPost;
     private $referenceBlogPostKeys = [];
     private $userPasswordHasher;
     private $faker;
@@ -51,7 +53,7 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < self::MAX_BLOG_POST; $i += 1) {
             $blogPost = new BlogPost();
             $blogPost->setTitle($this->faker->text(30));
-            $blogPost->setAuthor($this->getRandomUser());
+            $blogPost->setAuthor($this->getRandomUser($blogPost));
             $blogPost->setContent($this->faker->realText());
             $blogPost->setCreatedAt($this->faker->dateTimeThisYear());
             $blogPost->setSlug($this->faker->slug);
@@ -69,9 +71,9 @@ class AppFixtures extends Fixture
         foreach ($this->referenceBlogPostKeys as $refKeyBlogPost) {
             for ($i = 0; $i < rand(1, self::MAX_COMMENTS); $i += 1) {
 
-                $comment = (new Comment())
-                    ->setPost($this->getReference($refKeyBlogPost))
-                    ->setAuthor($this->getRandomUser())
+                $comment = new Comment();
+                $comment->setPost($this->getReference($refKeyBlogPost))
+                    ->setAuthor($this->getRandomUser($comment))
                     ->setCreatedAt($this->faker->dateTimeThisMonth())
                     ->setContent($this->faker->text)
                     ->setIsPublished(true);
@@ -104,10 +106,32 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    private function getRandomUser(): User
+    private function getRandomUser($entity): User
     {
-        $refKey = array_rand($this->referenceUserKeys);
+        if ($entity instanceof Comment) {
+            if (!$this->referenceUserKeysForComment) {
+                $this->referenceUserKeysForComment = array_filter($this->referenceUserKeys, function (string $key) {
+                    // Все пользователи авторизованные могут добавить комментарий
+                    return (bool)array_intersect(User::ALL_ROLES,  $this->getReference($key)->getRoles());
+                });
+            }
 
-        return $this->getReference($this->referenceUserKeys[$refKey]);
+            return $this->getReference($this->referenceUserKeys[array_rand($this->referenceUserKeysForComment)]);
+        }
+
+        if ($entity instanceof BlogPost) {
+            if (!$this->referenceUserKeysForPost) {
+                $this->referenceUserKeysForPost = array_filter($this->referenceUserKeys, function (string $key) {
+                    // Размещать пост в блоге могут только роли "пользователь", "админ"
+                    return (bool)array_intersect([User::ROLE_USER, User::ROLE_ADMIN], $this->getReference($key)->getRoles());
+                });
+            }
+
+            return $this->getReference($this->referenceUserKeys[array_rand($this->referenceUserKeysForPost)]);
+        }
+
+        $errorMessage = sprintf('Ups! Input Entity not support %s', get_class($entity));
+
+        throw new \UnexpectedValueException($errorMessage);
     }
 }
