@@ -18,11 +18,11 @@ class AppFixtures extends Fixture
     private const MAX_BLOG_POST = 50;
     private const MAX_COMMENTS = 25;
     private const USERS = [
-        ['email' => 'nyasia01@hotmail.com', 'login' => 'nyasia', 'password' => 'PopLop245', 'roles' => [User::ROLE_ADMIN]],
-        ['email' => 'utillman@rohan.org', 'login' => 'utillman', 'password' => '22KokLut1', 'roles' => [User::ROLE_USER, User::ROLE_MODERATOR]],
-        ['email' => 'kebert@connelly.info', 'login' => 'kebert', 'password' => '55UniNorm1', 'roles' => [User::ROLE_USER]],
-        ['email' => 'vanessa90@gmail.com', 'login' => 'vanessa', 'password' => 'YariLo123', 'roles' => [User::ROLE_MODERATOR]],
-        ['email' => 'hauck.celia@friesen.com', 'login' => 'hauck.celia', 'password' => 'JoinUsLite568', 'roles' => [User::ROLE_USER]],
+        ['email' => 'nyasia01@hotmail.com', 'login' => 'nyasia', 'password' => 'SaSa145', 'roles' => [User::ROLE_ADMIN]],
+        ['email' => 'utillman@rohan.org', 'login' => 'utillman', 'password' => 'SaSa145', 'roles' => [User::ROLE_USER, User::ROLE_MODERATOR]],
+        ['email' => 'kebert@connelly.info', 'login' => 'kebert', 'password' => 'SaSa145', 'roles' => [User::ROLE_USER]],
+        ['email' => 'vanessa90@gmail.com', 'login' => 'vanessa', 'password' => 'SaSa145', 'roles' => [User::ROLE_MODERATOR]],
+        ['email' => 'hauck.celia@friesen.com', 'login' => 'hauck.celia', 'password' => 'SaSa145', 'roles' => [User::ROLE_USER]],
     ];
 
     /**
