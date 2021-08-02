@@ -7,13 +7,29 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
- *     itemOperations={"get"},
- *     collectionOperations={"get"}
+ *     normalizationContext={"groups"={"comment:read"}},
+ *     itemOperations={
+ *          "get",
+ *          "put"={
+ *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
+ *              "denormalization_context"={"groups"={"comment:update"}},
+ *          },
+ *     },
+ *     collectionOperations={
+ *          "get",
+ *          "post"={
+ *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY')",
+ *              "denormalization_context"={"groups"={"comment:create"}},
+ *          }
+ *     }
  * )
  * @ORM\Entity(repositoryClass=CommentRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Comment
 {
@@ -21,33 +37,49 @@ class Comment
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"comment:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"comment:update", "comment:create", "comment:read"})
+     * @Assert\NotBlank
+     * @Assert\Length(min=25)
      */
     private $content;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups("comment:read")
      */
     private $createdAt;
 
     /**
+     * @ORM\Column(type="datetime")
+     * @Groups("comment:read")
+     */
+    private $updateAt;
+
+    /**
      * @ORM\Column(type="boolean")
+     * @Groups("comment:read")
      */
     private $isPublished;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"comment:create", "comment:read"})
+     * @Assert\NotBlank
      */
     private $author;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\BlogPost", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"comment:create", "comment:read"})
+     * @Assert\NotBlank
      */
     private $post;
 
@@ -114,5 +146,30 @@ class Comment
         $this->post = $post;
 
         return $this;
+    }
+
+    public function getUpdateAt(): ?\DateTimeInterface
+    {
+        return $this->updateAt;
+    }
+
+    public function setUpdateAt(\DateTimeInterface $updateAt): self
+    {
+        $this->updateAt = $updateAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setDatesAutomatically()
+    {
+        $this->setUpdateAt(new \DateTime());
+
+        if ($this->getCreatedAt() === null) {
+            $this->setCreatedAt(new \DateTime());
+        }
     }
 }
