@@ -29,6 +29,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          },
  *          "user_change_password"={
  *              "method"="put",
+ *              "openapi_context"={
+ *                  "summary"="Change curent password for auth user",
+ *              },
  *              "path"="/users/change-password/{id}",
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
  *              "denormalization_context"={"groups"={"change-password"}}
