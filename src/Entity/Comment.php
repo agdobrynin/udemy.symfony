@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     itemOperations={
  *          "get",
  *          "put"={
- *              "access_control"="is_granted('ROLE_USER') and object.getAuthor() === user",
+ *              "access_control"="(is_granted('ROLE_ADMIN') or is_granted('ROLE_MODERATOR')) or (is_granted('ROLE_USER') and object.getAuthor() === user)",
  *              "denormalization_context"={"groups"={"comment:update"}},
  *          },
  *          "comment_approved"={
@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *                  "summary"="Approved comment",
  *              },
  *              "path"="/comments/{id}/approved",
- *              "access_control"="is_granted('ROLE_MODERATOR')",
+ *              "access_control"="is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') ",
  *              "denormalization_context"={"groups"={"comment-denormalization:approved"}},
  *              "normalization_context"={"groups"={"comment-normalization:approved"}}
  *          }
