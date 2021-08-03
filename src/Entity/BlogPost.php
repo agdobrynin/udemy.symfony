@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ApiResource(
  *     itemOperations={
  *          "get"={
- *              "normalization_context"={"groups"={"get:read_post:with_author"}},
+ *              "normalization_context"={"groups"={"get:read_post:with_author", "read_post:full"}},
  *          },
  *          "put"={
  *              "denormalization_context"={"groups"={"put:write"}},
@@ -30,7 +30,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          }
  *     },
  *     collectionOperations={
- *          "get",
+ *          "get"={
+ *              "normalization_context"={"groups"={"get:read_post:with_author"}},
+ *          },
  *          "post"={
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY')",
  *              "denormalization_context"={"groups"={"post:write"}},
@@ -49,40 +51,40 @@ class BlogPost implements AuthorEntityInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"get:read_post:with_author"})
+     * @Groups({"get:read_post:with_author", "read_post:full"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\Length(min=10)
-     * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author"})
+     * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author", "read_post:full"})
      */
     private $title;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups ({"put:read", "get:read_post:with_author"})
+     * @Groups ({"put:read", "get:read_post:with_author", "read_post:full"})
      */
     private $author;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"put:read", "get:read_post:with_author"})
+     * @Groups({"put:read", "get:read_post:with_author", "read_post:full"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"put:read", "get:read_post:with_author"})
+     * @Groups({"put:read", "get:read_post:with_author", "read_post:full"})
      */
     private $updateAt;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\Length(min=140)
-     * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author"})
+     * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author", "read_post:full"})
      */
     private $content;
 
@@ -94,7 +96,7 @@ class BlogPost implements AuthorEntityInterface
      *     pattern="/^([a-z_\-0-9]+)$/",
      *     message="Имя публикации может содержать латинские буквы в нижнем регистре (маленькие буквы), цифры, тире"
      * )
-     * @Groups({"put:read", "post:write", "get:read_post:with_author"})
+     * @Groups({"put:read", "post:write", "get:read_post:with_author", "read_post:full"})
      */
     private $slug;
 

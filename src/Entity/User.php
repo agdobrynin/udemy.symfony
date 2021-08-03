@@ -18,14 +18,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(
- *     normalizationContext={"groups"={"get"}},
  *     itemOperations={
  *          "get"={
- *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY')"
+ *              "normalization_context"={"groups"={"user:read"}}
  *          },
  *          "put"={
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
- *              "denormalization_context"={"groups"={"update"}}
+ *              "denormalization_context"={"groups"={"user:update"}}
  *          },
  *          "user_change_password"={
  *              "method"="put",
@@ -34,13 +33,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              },
  *              "path"="/users/change-password/{id}",
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
- *              "denormalization_context"={"groups"={"change-password"}}
+ *              "denormalization_context"={"groups"={"user:change-password"}}
  *         },
  *     },
  *     collectionOperations={
  *          "post"={
  *              "denormalization_context"={"groups"={"create"}}
- *          }
+ *          },
  *     },
  * )
  * @UniqueEntity(
@@ -70,13 +69,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"get", "get-comments-with-author"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=20)
-     * @Groups({"create", "update"})
+     * @Groups({"user:create", "user:update"})
      * @Assert\NotBlank(message="Укажите логин пользователя")
      * @Assert\Length(
      *     min=5, minMessage="Логин должен быть более {{ limit }} символов",
@@ -86,7 +84,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $login;
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"create", "change-password"})
+     * @Groups({"user:create", "user:change-password"})
      * @Assert\NotBlank(message="Укажите пароль пользователя")
      * @Assert\Length(
      *     min=6, minMessage="Минимальная длинна пароля {{ limit }} символов",
@@ -100,7 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
-     * @Groups({"create", "change-password"})
+     * @Groups({"user:create", "user:change-password"})
      * @Assert\NotBlank(message="Повторите пароль")
      * @Assert\Expression(
      *     "this.getPassword() === this.getPasswordRepeated()",
@@ -111,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"create"})
+     * @Groups({"user:create"})
      * @Assert\NotBlank(message="Укажите email пользователя")
      * @Assert\Email(message="Указанный email некорректный")
      */
@@ -124,7 +122,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get", "create", "update", "get-comments-with-author", "get:read_post:with_author"})
+     * @Groups({"user:read", "user:create", "user:update", "get-comments-with-author", "get:read_post:with_author"})
      * @Assert\NotBlank(message="Укажите полное имя пользователя")
      * @Assert\Length(min=5, minMessage="Минимальная далинна имени пользователя {{ limit }} символов")
      */
@@ -132,13 +130,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\BlogPost", mappedBy="author")
-     * @Groups({"get"})
+     * @Groups({"user:read"})
      */
     private $posts;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="author")
-     * @Groups({"get"})
+     * @Groups({"user:read"})
      */
     private $comments;
 
