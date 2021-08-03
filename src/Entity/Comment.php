@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     itemOperations={
  *          "get",
  *          "put"={
- *              "access_control"="is_granted('ROLE_COMMENT_WRITER') and object.getAuthor() === user",
+ *              "access_control"="is_granted('ROLE_USER') and object.getAuthor() === user",
  *              "denormalization_context"={"groups"={"comment:update"}},
  *          },
  *          "comment_approved"={
@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     collectionOperations={
  *          "get",
  *          "post"={
- *              "access_control"="is_granted('ROLE_COMMENT_WRITER')",
+ *              "access_control"="is_granted('ROLE_USER') or is_granted('ROLE_MODERATOR')",
  *              "denormalization_context"={"groups"={"comment:create"}},
  *          },
  *     },

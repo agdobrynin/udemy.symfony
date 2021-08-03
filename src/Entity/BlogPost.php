@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "put"={
  *              "denormalization_context"={"groups"={"put:write"}},
  *              "normalization_context"={"groups"={"put:read"}},
- *              "access_control"="is_granted('ROLE_WRITER') and object.getAuthor() === user"
+ *              "access_control"="is_granted('ROLE_USER') and object.getAuthor() === user"
  *          }
  *     },
  *     collectionOperations={
@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              "normalization_context"={"groups"={"get:read_post:with_author"}},
  *          },
  *          "post"={
- *              "access_control"="is_granted('ROLE_WRITER')",
+ *              "access_control"="is_granted('ROLE_USER')",
  *              "denormalization_context"={"groups"={"post:write"}},
  *          }
  *      }
