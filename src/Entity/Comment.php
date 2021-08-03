@@ -25,8 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              "openapi_context"={
  *                  "summary"="Approved comment",
  *              },
- *              "path"="/comment/{id}/approved",
- *              "access_control"="is_granted('ROLE_COMMENT_MODERATOR')",
+ *              "path"="/comments/{id}/approved",
+ *              "access_control"="is_granted('ROLE_MODERATOR')",
  *              "denormalization_context"={"groups"={"comment-denormalization:approved"}},
  *              "normalization_context"={"groups"={"comment-normalization:approved"}}
  *          }
@@ -197,13 +197,15 @@ class Comment implements AuthorEntityInterface
      */
     public function setIsPublishedAutomatically(): void
     {
-        $rolesAvailablePublishComments = [User::ROLE_ADMIN, User::ROLE_MODERATOR];
-        if (array_intersect($rolesAvailablePublishComments, $this->getAuthor()->getRoles())) {
-            $this->setIsPublished(true);
+        if (!$this->getId()) {
+            $rolesAvailablePublishComments = [User::ROLE_ADMIN, User::ROLE_MODERATOR];
+            if (array_intersect($rolesAvailablePublishComments, $this->getAuthor()->getRoles())) {
+                $this->setIsPublished(true);
 
-            return;
+                return;
+            }
+
+            $this->setIsPublished(false);
         }
-
-        $this->setIsPublished(false);
     }
 }

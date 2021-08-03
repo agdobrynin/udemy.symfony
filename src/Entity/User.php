@@ -119,6 +119,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="simple_array", length="255")
+     * @Groups({"user:read"})
      */
     private $roles;
 
