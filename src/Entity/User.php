@@ -24,7 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          },
  *          "put"={
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
- *              "denormalization_context"={"groups"={"user:update"}}
+ *              "denormalization_context"={"groups"={"user:update"}},
+ *              "normalization_context"={"groups"={"user:update"}}
  *          },
  *          "user_change_password"={
  *              "method"="put",
@@ -33,7 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              },
  *              "path"="/users/change-password/{id}",
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
- *              "denormalization_context"={"groups"={"user:change-password"}}
+ *              "denormalization_context"={"groups"={"user:change-password"}},
+ *              "normalization_context"={"groups"={"user:change-password"}}
  *         },
  *     },
  *     collectionOperations={
