@@ -31,3 +31,7 @@ security:
 #        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/api/,       roles: IS_AUTHENTICATED_FULLY }
 #        - { path: ^/api,       roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    role_hierarchy:
+        ROLE_WRITER: [ROLE_ADMIN, ROLE_USER]
+        ROLE_COMMENT_MODERATOR: [ROLE_ADMIN, ROLE_MODERATOR]
+        ROLE_COMMENT_WRITER: [ROLE_ADMIN, ROLE_USER, ROLE_MODERATOR]
