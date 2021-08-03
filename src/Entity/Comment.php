@@ -17,14 +17,24 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     itemOperations={
  *          "get",
  *          "put"={
- *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() === user",
+ *              "access_control"="is_granted('ROLE_COMMENT_WRITER') and object.getAuthor() === user",
  *              "denormalization_context"={"groups"={"comment:update"}},
  *          },
+ *          "comment_approved"={
+ *              "method"="put",
+ *              "openapi_context"={
+ *                  "summary"="Approved comment",
+ *              },
+ *              "path"="/comment/{id}/approved",
+ *              "access_control"="is_granted('ROLE_COMMENT_MODERATOR')",
+ *              "denormalization_context"={"groups"={"comment-denormalization:approved"}},
+ *              "normalization_context"={"groups"={"comment-normalization:approved"}}
+ *          }
  *     },
  *     collectionOperations={
  *          "get",
  *          "post"={
- *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY')",
+ *              "access_control"="is_granted('ROLE_COMMENT_WRITER')",
  *              "denormalization_context"={"groups"={"comment:create"}},
  *          },
  *     },
@@ -51,7 +61,7 @@ class Comment implements AuthorEntityInterface
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"comment:update", "comment:create", "comment:read", "get-comments-with-author"})
+     * @Groups({"comment:update", "comment:create", "comment:read", "get-comments-with-author", "comment-normalization:approved"})
      * @Assert\NotBlank
      * @Assert\Length(min=25)
      */
@@ -59,19 +69,19 @@ class Comment implements AuthorEntityInterface
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"comment:read", "get-comments-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author", "comment-normalization:approved"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"comment:read", "get-comments-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author", "comment-normalization:approved"})
      */
     private $updateAt;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"comment:read", "get-comments-with-author"})
+     * @Groups({"comment:read", "get-comments-with-author", "comment-normalization:approved", "comment-denormalization:approved"})
      */
     private $isPublished;
 
