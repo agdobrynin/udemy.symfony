@@ -11,18 +11,18 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 final class UserContextBuilder implements SerializerContextBuilderInterface
 {
-    private $builder;
+    private $decorated;
     private $checker;
 
-    public function __construct(SerializerContextBuilderInterface $builder, AuthorizationCheckerInterface $checker)
+    public function __construct(SerializerContextBuilderInterface $decorated, AuthorizationCheckerInterface $checker)
     {
-        $this->builder = $builder;
+        $this->decorated = $decorated;
         $this->checker = $checker;
     }
 
     public function createFromRequest(Request $request, bool $normalization, array $extractedAttributes = null): array
     {
-        $context = $this->builder->createFromRequest($request, $normalization, $extractedAttributes);
+        $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
 
         $resourceClass = $context['resource_class'] ?? null;
 
