@@ -111,7 +111,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:create", "admin:user:read"})
+     * @Groups({"user:create", "admin:user:read", "owner:user:read"})
      * @Assert\NotBlank(message="Укажите email пользователя")
      * @Assert\Email(message="Указанный email некорректный")
      */
@@ -119,7 +119,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="simple_array", length="255")
-     * @Groups({"admin:user:read"})
+     * @Groups({"admin:user:read", "owner:user:read"})
      */
     private $roles;
 
