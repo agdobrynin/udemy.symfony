@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Controller\ChangePasswordAction;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,11 +33,30 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              "method"="put",
  *              "openapi_context"={
  *                  "summary"="Change curent password for auth user",
+ *                  "responses"={
+ *                      "200"={
+ *                          "content"={
+ *                              "application/json"={
+ *                                  "schema" = {
+ *                                      "type" = "object",
+ *                                      "properties" = {
+ *                                          "token" = {
+ *                                              "type"="string",
+ *                                              "example"="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MjgxNTA4NTksImV4cCI6MTYyODE1NDQ1OSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoia2ViZXJ0In0.gNatp-vyVkulZn9hHB-C9TYpgXKanEmFZeVGEPRFdMpfSHU4VX0G_bQ-IEB6jPavNicCwn-ACv9WEP6ffq5y3e1NYw19_eEGTvcyIdlBlCIuvHjx2upXCRSdU7CAVKte4scXWwoIVVrOiDLm8qrH903LWR3Y-0qmPQ3N-37JQgHiZAPJrVglQNLOJOtMHPkdxo8gkTTSQLV14YddRLRmUrkP-8oS6-Kg7HQy0n_jiLoVrumFIfN2JIwhjsswN8bNo2OYgXTJgh1ditD5L58u6Us9Eyt_YpXSDtMH_1YhBx2onlL326cNb1vgtV3NeJ3nkFYcTdflT6NLSqtee0Rmog",
+ *                                          },
+ *                                      },
+ *                                  },
+ *                              },
+ *                          },
+ *                      }
+ *                  },
  *              },
- *              "path"="/users/change-password/{id}",
+ *              "path"="/users/{id}/change-password",
+ *              "controller"=ChangePasswordAction::class,
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
- *              "denormalization_context"={"groups"={"user:change-password"}},
- *              "normalization_context"={"groups"={"user:change-password"}}
+ *              "denormalization_context"={
+ *                  "groups"={"user:change-password"},
+ *              },
  *         },
  *     },
  *     collectionOperations={
@@ -77,22 +98,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=20)
      * @Groups({"user:create", "user:update"})
-     * @Assert\NotBlank(message="Укажите логин пользователя")
+     * @Assert\NotBlank(
+     *     groups={"user:create", "user:update"},
+     *     message="Укажите логин пользователя")
      * @Assert\Length(
+     *     groups={"user:create", "user:update"},
      *     min=5, minMessage="Логин должен быть более {{ limit }} символов",
-     *     max=20, maxMessage="Максимальная длинна логина {{ limit }} символов",
-     * )
+     *     max=20, maxMessage="Максимальная длинна логина {{ limit }} символов")
      */
     private $login;
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:create", "user:change-password"})
-     * @Assert\NotBlank(message="Укажите пароль пользователя")
+     * @Groups({"user:create"})
+     * @Assert\NotBlank(
+     *     groups={"user:create"},
+     *     message="Укажите пароль пользователя")
      * @Assert\Length(
-     *     min=6, minMessage="Минимальная длинна пароля {{ limit }} символов",
+     *     groups={"user:create"},
+     *     min=6,
+     *     minMessage="Минимальная длинна пароля {{ limit }} символов",
      *     max=255, maxMessage="Слишком большая длинна пароля. Максимальное количество символов {{ limit }}"
      * )
      * @Assert\Regex(
+     *     groups={"user:create"},
      *     pattern="/(?=.*[a-zа-яё])(?=.*[A-ZА-ЯЁ])(?=.*(.*\d){2})/",
      *     message="Пароль должен содержать одну заглавную букву, две цифры"
      * )
@@ -100,20 +128,57 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     /**
-     * @Groups({"user:create", "user:change-password"})
-     * @Assert\NotBlank(message="Повторите пароль")
+     * @Groups({"user:create"})
+     * @Assert\NotBlank(
+     *     groups={"user:create"},
+     *     message="Повторите пароль")
      * @Assert\Expression(
+     *     groups={"user:create"},
      *     "this.getPassword() === this.getPasswordRepeated()",
-     *     message="Пароли не совпадают"
-     * )
+     *     message="Пароли не совпадают")
      */
     private $passwordRepeated;
 
     /**
+     * @Groups({"user:change-password"})
+     * @Assert\NotBlank(message="Укажите пароль пользователя")
+     * @Assert\Length(
+     *     min=6,
+     *     minMessage="Минимальная длинна пароля {{ limit }} символов",
+     *     max=255, maxMessage="Слишком большая длинна пароля. Максимальное количество символов {{ limit }}")
+     * @Assert\Regex(
+     *     pattern="/(?=.*[a-zа-яё])(?=.*[A-ZА-ЯЁ])(?=.*(.*\d){2})/",
+     *     message="Пароль должен содержать одну заглавную букву, две цифры"
+     * )
+     */
+    private $passwordNew;
+
+    /**
+     * @Groups({"user:change-password"})
+     * @Assert\NotBlank(message="Повторите пароль")
+     * @Assert\Expression(
+     *     "this.getPasswordNew() === this.getPasswordNewRepeated()",
+     *     message="Новые пароли не совпадают. Проверьте пароли и повторите ввод."
+     * )
+     */
+    private $passwordNewRepeated;
+
+    /**
+     * @Groups({"user:change-password"})
+     * @Assert\NotBlank
+     * @UserPassword(message="Существующий пароль неверный")
+     */
+    private $passwordOld;
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"user:create", "admin:user:read", "owner:user:read"})
-     * @Assert\NotBlank(message="Укажите email пользователя")
-     * @Assert\Email(message="Указанный email некорректный")
+     * @Assert\NotBlank(
+     *     groups={"user:create"},
+     *     message="Укажите email пользователя")
+     * @Assert\Email(
+     *     groups={"user:create"},
+     *     message="Указанный email некорректный")
      */
     private $email;
 
@@ -126,8 +191,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"user:read", "user:create", "user:update", "get-comments-with-author", "get:read_post:with_author"})
-     * @Assert\NotBlank(message="Укажите полное имя пользователя")
-     * @Assert\Length(min=5, minMessage="Минимальная далинна имени пользователя {{ limit }} символов")
+     * @Assert\NotBlank(
+     *     groups={"user:create", "user:update"},
+     *     message="Укажите полное имя пользователя")
+     * @Assert\Length(
+     *     groups={"user:create", "user:update"},
+     *     min=5,
+     *     minMessage="Минимальная далинна имени пользователя {{ limit }} символов")
      */
     private $name;
 
@@ -142,6 +212,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"user:read"})
      */
     private $comments;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $passwordChangedTimeStamp;
 
     public function __construct()
     {
@@ -257,4 +332,45 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->passwordRepeated = $passwordRepeated;
     }
+
+    public function getPasswordNew(): ?string
+    {
+        return $this->passwordNew;
+    }
+
+    public function setPasswordNew(?string $passwordNew = null): void
+    {
+        $this->passwordNew = $passwordNew;
+    }
+
+    public function getPasswordNewRepeated(): ?string
+    {
+        return $this->passwordNewRepeated;
+    }
+
+    public function setPasswordNewRepeated(?string $passwordNewRepeated = null): void
+    {
+        $this->passwordNewRepeated = $passwordNewRepeated;
+    }
+
+    public function getPasswordOld(): ?string
+    {
+        return $this->passwordOld;
+    }
+
+    public function setPasswordOld(?string $passwordOld = null): void
+    {
+        $this->passwordOld = $passwordOld;
+    }
+
+    public function getPasswordChangedTimeStamp(): ?int
+    {
+        return $this->passwordChangedTimeStamp;
+    }
+
+    public function setPasswordChangedTimeStamp(?int $passwordChangedTimeStamp = null): void
+    {
+        $this->passwordChangedTimeStamp = $passwordChangedTimeStamp;
+    }
+
 }
