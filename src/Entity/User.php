@@ -214,7 +214,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $comments;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $passwordChangedTimeStamp;
 
