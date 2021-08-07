@@ -70,13 +70,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  * )
  * @UniqueEntity(
- *     groups={"user:create"},
- *     "login",
- *     message="Логин уже используется в системе. Придумайте другой логин"
+ *     groups={"user:create", "user:update"},
+ *     fields={"login"},
+ *     message="Такой login уже используется в системе. Укажите другой login"
  * )
  * @UniqueEntity(
- *      groups={"user:create"},
- *     "email",
+ *     groups={"user:create", "user:update"},
+ *     fields={"email"},
  *     message="Такой email уже используется в системе. Укажите другой email"
  * )
  * @method string getUserIdentifier()
@@ -105,10 +105,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=20)
      * @Groups({"user:create", "user:update"})
      * @Assert\NotBlank(
-     *     groups={"user:create"},
+     *     groups={"user:create", "user:update"},
      *     message="Укажите логин пользователя")
      * @Assert\Length(
-     *     groups={"user:create"},
+     *     groups={"user:create", "user:update"},
      *     min=5, minMessage="Логин должен быть более {{ limit }} символов",
      *     max=20, maxMessage="Максимальная длинна логина {{ limit }} символов")
      */
@@ -187,12 +187,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:create", "admin:user:read", "owner:user:read"})
+     * @Groups({"user:create", "admin:user:read", "owner:user:read", "user:update"})
      * @Assert\NotBlank(
-     *     groups={"user:create"},
+     *     groups={"user:create", "user:update"},
      *     message="Укажите email пользователя")
      * @Assert\Email(
-     *     groups={"user:create"},
+     *     groups={"user:create", "user:update"},
      *     message="Указанный email некорректный")
      */
     private $email;
