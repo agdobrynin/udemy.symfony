@@ -22,14 +22,14 @@ security:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
+            user_checker: App\Security\UserIsActiveChecker
         api:
             pattern:   ^/api
             stateless: true
-            # jwt: ~
             guard:
                 authenticators:
                     - App\Security\TokenAuthenticator
+            user_checker: App\Security\UserIsActiveChecker
 
     access_control:
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }

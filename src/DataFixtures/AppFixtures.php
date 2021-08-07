@@ -8,6 +8,7 @@ use App\Entity\AuthorEntityInterface;
 use App\Entity\BlogPost;
 use App\Entity\Comment;
 use App\Entity\User;
+use App\Security\TokenGenerator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -17,14 +18,10 @@ class AppFixtures extends Fixture
 {
     private const MAX_BLOG_POST = 50;
     private const MAX_COMMENTS = 25;
-    private const USERS = [
-        ['email' => 'nyasia01@hotmail.com', 'login' => 'nyasia', 'password' => 'SaSa145', 'roles' => [User::ROLE_ADMIN]],
-        ['email' => 'utillman@rohan.org', 'login' => 'utillman', 'password' => 'SaSa145', 'roles' => [User::ROLE_USER, User::ROLE_MODERATOR]],
-        ['email' => 'kebert@connelly.info', 'login' => 'kebert', 'password' => 'SaSa145', 'roles' => [User::ROLE_USER]],
-        ['email' => 'vanessa90@gmail.com', 'login' => 'vanessa', 'password' => 'SaSa145', 'roles' => [User::ROLE_MODERATOR]],
-        ['email' => 'hauck.celia@friesen.com', 'login' => 'hauck.celia', 'password' => 'SaSa145', 'roles' => [User::ROLE_USER]],
-    ];
-
+    /**
+     * @var FixtureUser[]
+     */
+    private $users = [];
     /**
      * @var string[]
      */
@@ -34,11 +31,18 @@ class AppFixtures extends Fixture
     private $referenceBlogPostKeys = [];
     private $userPasswordHasher;
     private $faker;
+    private $generator;
 
-    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher, TokenGenerator $generator)
     {
         $this->userPasswordHasher = $userPasswordHasher;
         $this->faker = Factory::create();
+        $this->users[] = (new FixtureUser('nyasia01@hotmail.com', 'nyasia'))->setRoles([User::ROLE_ADMIN]);
+        $this->users[] = (new FixtureUser('utillman@rohan.org', 'utillman'))->setRoles([User::ROLE_USER, User::ROLE_MODERATOR]);
+        $this->users[] = (new FixtureUser('kebert@connelly.info', 'kebert', false))->setRoles([User::ROLE_USER]);
+        $this->users[] = (new FixtureUser('vanessa90@gmail.com', 'vanessa90'))->setRoles([User::ROLE_MODERATOR]);
+        $this->users[] = (new FixtureUser('hauck.celia@friesen.com', 'hauck.celia'))->setRoles([User::ROLE_USER]);
+        $this->generator = $generator;
     }
 
     public function load(ObjectManager $manager)
@@ -86,17 +90,20 @@ class AppFixtures extends Fixture
 
     public function loadUsers(ObjectManager $manager)
     {
-        foreach (self::USERS as $index => $userSource) {
-            $login=''; $email=''; $password=''; $roles=[];
-            extract($userSource);
+        foreach ($this->users as $index => $userSrc) {
 
             $user = (new User())
-                ->setLogin($login)
-                ->setEmail($email)
+                ->setLogin($userSrc->login)
+                ->setEmail($userSrc->email)
                 ->setName($this->faker->name)
-                ->setRoles($roles);
+                ->setIsActive($userSrc->isActive)
+                ->setRoles($userSrc->roles);
 
-            $user->setPassword($this->userPasswordHasher->hashPassword($user, $password));
+            if (!$userSrc->isActive) {
+                $user->setConfirmationToken($this->generator->getRandomSecureToken());
+            }
+
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, $userSrc->password));
             $refKey = 'user.id.' . $index;
             $this->addReference($refKey, $user);
             $this->referenceUserKeys[] = $refKey;

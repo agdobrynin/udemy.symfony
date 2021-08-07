@@ -61,7 +61,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *     collectionOperations={
  *          "post"={
- *              "denormalization_context"={"groups"={"create"}}
+ *              "denormalization_context"={"groups"={"user:create"}},
+ *              "normalization_context"={"groups"={"user:create-ok"}}
  *          },
  *     },
  * )
@@ -99,10 +100,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=20)
      * @Groups({"user:create", "user:update"})
      * @Assert\NotBlank(
-     *     groups={"user:create", "user:update"},
      *     message="Укажите логин пользователя")
      * @Assert\Length(
-     *     groups={"user:create", "user:update"},
      *     min=5, minMessage="Логин должен быть более {{ limit }} символов",
      *     max=20, maxMessage="Максимальная длинна логина {{ limit }} символов")
      */
@@ -141,12 +140,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @Groups({"user:change-password"})
-     * @Assert\NotBlank(message="Укажите пароль пользователя")
+     * @Assert\NotBlank(
+     *     groups={"user:change-password"},
+     *     message="Укажите пароль пользователя")
      * @Assert\Length(
+     *     groups={"user:change-password"},
      *     min=6,
      *     minMessage="Минимальная длинна пароля {{ limit }} символов",
      *     max=255, maxMessage="Слишком большая длинна пароля. Максимальное количество символов {{ limit }}")
      * @Assert\Regex(
+     *     groups={"user:change-password"},
      *     pattern="/(?=.*[a-zа-яё])(?=.*[A-ZА-ЯЁ])(?=.*(.*\d){2})/",
      *     message="Пароль должен содержать одну заглавную букву, две цифры"
      * )
@@ -155,8 +158,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @Groups({"user:change-password"})
-     * @Assert\NotBlank(message="Повторите пароль")
+     * @Assert\NotBlank(
+     *     groups={"user:change-password"},
+     *     message="Повторите пароль")
      * @Assert\Expression(
+     *     groups={"user:change-password"},
      *     "this.getPasswordNew() === this.getPasswordNewRepeated()",
      *     message="Новые пароли не совпадают. Проверьте пароли и повторите ввод."
      * )
@@ -165,8 +171,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @Groups({"user:change-password"})
-     * @Assert\NotBlank
-     * @UserPassword(message="Существующий пароль неверный")
+     * @Assert\NotBlank(groups={"user:change-password"})
+     * @UserPassword(
+     *     groups={"user:change-password"},
+     *     message="Существующий пароль неверный")
      */
     private $passwordOld;
 
@@ -192,10 +200,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255)
      * @Groups({"user:read", "user:create", "user:update", "get-comments-with-author", "get:read_post:with_author"})
      * @Assert\NotBlank(
-     *     groups={"user:create", "user:update"},
      *     message="Укажите полное имя пользователя")
      * @Assert\Length(
-     *     groups={"user:create", "user:update"},
      *     min=5,
      *     minMessage="Минимальная далинна имени пользователя {{ limit }} символов")
      */
@@ -217,6 +223,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="integer", nullable=true)
      */
     private $passwordChangedTimeStamp;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isActive;
+
+    /**
+     * @ORM\Column(type="string", nullable=true, length=40)
+     */
+    private $confirmationToken;
 
     public function __construct()
     {
@@ -368,9 +384,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->passwordChangedTimeStamp;
     }
 
-    public function setPasswordChangedTimeStamp(?int $passwordChangedTimeStamp = null): void
+    public function setPasswordChangedTimeStamp(?int $passwordChangedTimeStamp = null): self
     {
         $this->passwordChangedTimeStamp = $passwordChangedTimeStamp;
+
+        return $this;
     }
 
+    public function getIsActive(): bool
+    {
+        return (bool)$this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive = null): self
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken(?string $confirmationToken = null): self
+    {
+        $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
 }
