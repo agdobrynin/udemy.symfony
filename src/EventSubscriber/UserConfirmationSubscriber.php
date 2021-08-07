@@ -40,7 +40,7 @@ final class UserConfirmationSubscriber implements EventSubscriberInterface
         $userConfirmation = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
-        if (!$userConfirmation instanceof UserConfirmation && Request::METHOD_POST !== $method) {
+        if (!$userConfirmation instanceof UserConfirmation || Request::METHOD_POST !== $method) {
             return;
         }
 
@@ -49,6 +49,7 @@ final class UserConfirmationSubscriber implements EventSubscriberInterface
             $user->setConfirmationToken(null);
             $this->entityManager->flush();
             $event->setResponse(new JsonResponse(null, Response::HTTP_NO_CONTENT));
+            return;
         }
 
         throw new NotFoundHttpException('User not found.');
