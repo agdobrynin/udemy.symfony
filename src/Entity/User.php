@@ -27,7 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "put"={
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
  *              "denormalization_context"={"groups"={"user:update"}},
- *              "normalization_context"={"groups"={"user:update"}}
+ *              "normalization_context"={"groups"={"user:update"}},
+ *              "validation_groups"={"user:update"},
  *          },
  *          "user_change_password"={
  *              "method"="put",
@@ -54,6 +55,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *              "path"="/users/{id}/change-password",
  *              "controller"=ChangePasswordAction::class,
  *              "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object === user",
+ *              "validation_groups"={"user:change-password"},
  *              "denormalization_context"={
  *                  "groups"={"user:change-password"},
  *              },
@@ -61,16 +63,19 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *     collectionOperations={
  *          "post"={
+ *              "validation_groups"={"user:create"},
  *              "denormalization_context"={"groups"={"user:create"}},
  *              "normalization_context"={"groups"={"user:create-ok"}}
  *          },
  *     },
  * )
  * @UniqueEntity(
+ *     groups={"user:create"},
  *     "login",
  *     message="Логин уже используется в системе. Придумайте другой логин"
  * )
  * @UniqueEntity(
+ *      groups={"user:create"},
  *     "email",
  *     message="Такой email уже используется в системе. Укажите другой email"
  * )
@@ -100,8 +105,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=20)
      * @Groups({"user:create", "user:update"})
      * @Assert\NotBlank(
+     *     groups={"user:create"},
      *     message="Укажите логин пользователя")
      * @Assert\Length(
+     *     groups={"user:create"},
      *     min=5, minMessage="Логин должен быть более {{ limit }} символов",
      *     max=20, maxMessage="Максимальная длинна логина {{ limit }} символов")
      */
