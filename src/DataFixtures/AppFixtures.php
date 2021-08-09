@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\AuthorEntityInterface;
 use App\Entity\BlogPost;
 use App\Entity\Comment;
 use App\Entity\User;
