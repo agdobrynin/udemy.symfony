@@ -35,7 +35,7 @@ final class ChangePasswordAction
     {
         $this->validator->validate($user);
         $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPasswordNew()));
-        // Поле смены пароля старый токен еще валиден, его надо скинуть.
+        // После смены пароля старый токен еще валиден, его надо скинуть.
         $user->setPasswordChangedTimeStamp(time());
         // Для Entity действие persist выполнится автоматически.
         $this->em->flush();
