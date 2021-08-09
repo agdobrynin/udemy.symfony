@@ -6,13 +6,14 @@ namespace App\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
+use App\Entity\BlogPost;
 use App\Entity\MediaObject;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Vich\UploaderBundle\Storage\StorageInterface;
 
-final class ResolveMediaObjectContentUrlSubscriber implements EventSubscriberInterface
+final class ResolveBlogPostWithMediaObjectContentUrlSubscriber implements EventSubscriberInterface
 {
     private $storage;
 
@@ -37,22 +38,14 @@ final class ResolveMediaObjectContentUrlSubscriber implements EventSubscriberInt
             return;
         }
 
-        if (!($attributes = RequestAttributesExtractor::extractAttributes($request)) || !\is_a($attributes['resource_class'], MediaObject::class, true)) {
+        if (!($attributes = RequestAttributesExtractor::extractAttributes($request)) || !\is_a($attributes['resource_class'], BlogPost::class, true)) {
             return;
         }
 
-        $mediaObjects = $controllerResult;
+        /** @var BlogPost $blogPost */
+        $blogPost = $controllerResult;
 
-        if (!is_iterable($mediaObjects)) {
-            $mediaObjects = [$mediaObjects];
-        }
-
-        /** @var MediaObject $mediaObject */
-        foreach ($mediaObjects as $mediaObject) {
-            if (!$mediaObject instanceof MediaObject) {
-                continue;
-            }
-
+        foreach ($blogPost->getMediaObjects() as $mediaObject) {
             $mediaObject->contentUrl = $this->storage->resolveUri($mediaObject, 'file');
         }
     }
