@@ -12,15 +12,17 @@ use Symfony\Component\Mime\Address;
 final class Mailer
 {
     private $mailer;
+    private $robotEmail;
 
-    public function __construct(MailerInterface $mailer)
+    public function __construct(MailerInterface $mailer, string $robotEmail)
     {
         $this->mailer = $mailer;
+        $this->robotEmail = $robotEmail;
     }
 
     public function sendConfirmationLogin(User $user)
     {
-        $email = (new TemplatedEmail())->from('fabien@example.com')
+        $email = (new TemplatedEmail())->from($this->robotEmail)
             ->to(new Address($user->getEmail()))
             ->subject('Confirm your account!')
             ->htmlTemplate('emails/signup.html.twig')
