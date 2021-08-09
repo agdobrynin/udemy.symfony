@@ -67,7 +67,7 @@ class MediaObject
      * @var string|null
      *
      * @ApiProperty(iri="http://schema.org/contentUrl")
-     * @Groups({"media_object_read", "get:read_post:with_author"})
+     * @Groups({"media_object_read", "get:read_post:with_author", "read_post:full"})
      */
     public $contentUrl;
 
@@ -83,7 +83,7 @@ class MediaObject
      * @var string|null
      *
      * @ORM\Column(type="string", nullable=true, options={"default": null})
-     * @Groups({"media_object_read", "get:read_post:with_author", "read_post:full", "put:write", "put:read", "post:write"})
+     * @Groups({"get:read_post:with_author", "read_post:full", "put:write", "put:read", "post:write"})
      */
     public $filePath;
 
@@ -91,7 +91,7 @@ class MediaObject
      * @var string|null
      *
      * @ORM\Column(type="string", options={"default": ""})
-     * @Groups({"get:read_post:with_author", "media_object_read", "read_post:full"})
+     * @Groups({"get-blog-post-with-author"})
      */
     public $mimeType;
 
