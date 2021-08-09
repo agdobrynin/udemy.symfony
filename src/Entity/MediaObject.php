@@ -75,7 +75,7 @@ class MediaObject
      * @var File|null
      *
      * @Assert\NotNull(groups={"media_object_create"})
-     * @Vich\UploadableField(mapping="media_object", fileNameProperty="filePath")
+     * @Vich\UploadableField(mapping="media_object", fileNameProperty="fileName")
      */
     public $file;
 
@@ -85,7 +85,7 @@ class MediaObject
      * @ORM\Column(type="string", nullable=true, options={"default": null})
      * @Groups({"get:read_post:with_author", "read_post:full", "put:write", "put:read", "post:write"})
      */
-    public $filePath;
+    public $fileName;
 
     /**
      * @var string|null
