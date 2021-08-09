@@ -107,9 +107,18 @@ class BlogPost implements AuthorEntityInterface
      */
     private $comments;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\MediaObject")
+     * @ORM\JoinTable()
+     * @ApiSubresource()
+     * @Groups({"get:read_post:with_author", "read_post:full", "put:write", "put:read", "post:write"})
+     */
+    private $mediaObjects;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->mediaObjects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -179,6 +188,21 @@ class BlogPost implements AuthorEntityInterface
     public function getAuthor(): User
     {
         return $this->author;
+    }
+
+    public function getMediaObjects(): Collection
+    {
+        return $this->mediaObjects;
+    }
+
+    public function addMediaObject(MediaObject $mediaObject): void
+    {
+        $this->mediaObjects->add($mediaObject);
+    }
+
+    public function removeMediaObject(MediaObject $mediaObject): void
+    {
+        $this->mediaObjects->removeElement($mediaObject);
     }
 
     public function setAuthor(UserInterface $user): AuthorEntityInterface
