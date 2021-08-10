@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Repository\BlogPostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,6 +24,44 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
  * @ORM\HasLifecycleCallbacks()
+ * @ApiFilter(
+ *     SearchFilter::class,
+ *     properties={
+ *          "title":"partial",
+ *          "content":"partial",
+ *          "author":"exact",
+ *          "author.name":"partial",
+ *     },
+ * )
+ * @ApiFilter(
+ *     DateFilter::class,
+ *     properties={
+ *          "createdAt",
+ *          "updateAt",
+ *     }
+ * )
+ * @ApiFilter(
+ *     RangeFilter::class,
+ *     properties={
+ *          "id"
+ *     }
+ * )
+ * @ApiFilter(
+ *     OrderFilter::class,
+ *     properties={
+ *          "id",
+ *          "title",
+ *          "createdAt",
+ *          "updateAt",
+ *     },
+ * )
+ * @ApiFilter(
+ *     PropertyFilter::class,
+ *     arguments={
+ *          "parameterName": "properties",
+ *          "overrideDefaultProperties": false,
+ *     }
+ * )
  * @ApiResource(
  *     attributes={
  *          "order"={"createdAt":"desc"},
