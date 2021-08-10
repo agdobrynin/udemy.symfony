@@ -14,6 +14,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ApiResource(
  *     normalizationContext={"groups"={"comment:read"}},
+ *     attributes={
+ *          "order"={"createdAt":"desc"},
+ *     },
  *     itemOperations={
  *          "get",
  *          "put"={

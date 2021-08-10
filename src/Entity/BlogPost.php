@@ -19,6 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
  * @ORM\HasLifecycleCallbacks()
  * @ApiResource(
+ *     attributes={
+ *          "order"={"createdAt":"desc"},
+ *     },
  *     itemOperations={
  *          "get"={
  *              "normalization_context"={"groups"={"get:read_post:with_author", "read_post:full"}},
