@@ -6,24 +6,25 @@ namespace App\DataFixtures;
 
 use App\Entity\BlogPost;
 use App\Entity\Comment;
+use App\Entity\MediaObject;
 use App\Entity\User;
 use App\Security\TokenGenerator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     private const MAX_BLOG_POST = 50;
     private const MAX_COMMENTS = 25;
+
+    private $referenceMediaObjectKeys = [];
     /**
      * @var FixtureUser[]
      */
     private $users = [];
-    /**
-     * @var string[]
-     */
     private $referenceUserKeys = [];
     private $referenceUserKeysForComment;
     private $referenceUserKeysForPost;
@@ -46,9 +47,35 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
+        $this->loadMediaObjects($manager);
         $this->loadUsers($manager);
         $this->loadBlogPosts($manager);
         $this->loadComments($manager);
+    }
+
+    public function loadMediaObjects(ObjectManager $manager)
+    {
+        $fixtureDirImages = realpath(__DIR__.DIRECTORY_SEPARATOR.'images');
+        $dirImages = dir($fixtureDirImages);
+
+        while (false !== ($entry = $dirImages->read())) {
+            if (!in_array($entry, ['.', '..'], true)) {
+                $file = $fixtureDirImages.DIRECTORY_SEPARATOR.$entry;
+                $mimeType = mime_content_type($file) ?: '';
+                $tmpFile = tempnam(sys_get_temp_dir(), uniqid());
+                copy($file, $tmpFile);
+                $fileUploaded = new UploadedFile($tmpFile, $entry, $mimeType, null, true);
+                $mediaObject = new MediaObject();
+                $mediaObject->file = $fileUploaded;
+                $mediaObject->mimeType = $mimeType;
+                $manager->persist($mediaObject);
+                $refKey = "media_object_{$file}";
+                $this->addReference($refKey, $mediaObject);
+                $this->referenceMediaObjectKeys[] = $refKey;
+            }
+        }
+
+        $manager->flush();
     }
 
     public function loadBlogPosts(ObjectManager $manager)
@@ -60,6 +87,11 @@ class AppFixtures extends Fixture
             $blogPost->setContent($this->faker->realText());
             $blogPost->setCreatedAt($this->faker->dateTimeThisYear());
             $blogPost->setSlug($this->faker->slug);
+
+            foreach ($this->getRandomMediaObjects(2) as $mediaObject) {
+                $blogPost->addMediaObject($mediaObject);
+            }
+
             $refKey = "blogpost.{$i}";
             $this->addReference($refKey, $blogPost);
             $this->referenceBlogPostKeys[] = $refKey;
@@ -110,6 +142,24 @@ class AppFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    /**
+     * @return MediaObject[]
+     */
+    private function getRandomMediaObjects(int $max = 2): array
+    {
+        if (count($this->referenceMediaObjectKeys) < $max) {
+            throw new \UnexpectedValueException('Нельзя задать большее количество элементов из MediaObject');
+        }
+
+        $rand = [];
+
+        foreach (array_rand($this->referenceMediaObjectKeys, $max) as $randIndex) {
+            $rand[] = $this->getReference($this->referenceMediaObjectKeys[$randIndex]);
+        }
+
+        return $rand;
     }
 
     private function getRandomUser($entity): User
