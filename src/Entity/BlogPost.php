@@ -205,6 +205,11 @@ class BlogPost implements AuthorEntityInterface
         $this->mediaObjects->removeElement($mediaObject);
     }
 
+    public function removeMediaObjectsAll(): void
+    {
+        $this->mediaObjects->clear();
+    }
+
     public function setAuthor(UserInterface $user): AuthorEntityInterface
     {
         $this->author = $user;

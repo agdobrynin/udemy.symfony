@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Paginator;
 use ApiPlatform\Core\EventListener\EventPriorities;
 use ApiPlatform\Core\Util\RequestAttributesExtractor;
 use App\Entity\BlogPost;
@@ -42,11 +43,25 @@ final class ResolveBlogPostWithMediaObjectContentUrlSubscriber implements EventS
             return;
         }
 
-        /** @var BlogPost $blogPost */
-        $blogPost = $controllerResult;
-
-        foreach ($blogPost->getMediaObjects() as $mediaObject) {
-            $mediaObject->contentUrl = $this->storage->resolveUri($mediaObject, 'file');
+        if($controllerResult instanceof Paginator) {
+            /** @var BlogPost $blogPost */
+            foreach ($controllerResult as $blogPost) {
+                // Заберем только первую картинку к посту и прикрепим к mediaObjects.
+                $mediaObjects = $blogPost->getMediaObjects();
+                if (!empty($mediaObjects)) {
+                    /** @var MediaObject $mediaObjectFirst */
+                    $mediaObjectFirst = $mediaObjects[0];
+                    $blogPost->removeMediaObjectsAll();
+                    $mediaObjectFirst->contentUrl = $this->storage->resolveUri($mediaObjectFirst, 'file');
+                    $blogPost->addMediaObject($mediaObjectFirst);
+                }
+            }
+        } else {
+            /** @var BlogPost $blogPost */
+            $blogPost = $controllerResult;
+            foreach ($blogPost->getMediaObjects() as $mediaObject) {
+                $mediaObject->contentUrl = $this->storage->resolveUri($mediaObject, 'file');
+            }
         }
     }
 }
