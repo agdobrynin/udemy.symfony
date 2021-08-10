@@ -149,8 +149,11 @@ class AppFixtures extends Fixture
      */
     private function getRandomMediaObjects(int $max = 2): array
     {
-        if (count($this->referenceMediaObjectKeys) < $max) {
-            throw new \UnexpectedValueException('Нельзя задать большее количество элементов из MediaObject');
+        $total =count($this->referenceMediaObjectKeys);
+
+        if ($total < $max) {
+            $message = sprintf('Нельзя задать количество элементов "%d" из MediaObject так как их всего "%d"', $max, $total);
+            throw new \UnexpectedValueException($message);
         }
 
         $rand = [];
