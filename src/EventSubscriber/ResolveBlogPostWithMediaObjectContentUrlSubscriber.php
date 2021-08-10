@@ -43,22 +43,11 @@ final class ResolveBlogPostWithMediaObjectContentUrlSubscriber implements EventS
             return;
         }
 
-        if($controllerResult instanceof Paginator) {
-            /** @var BlogPost $blogPost */
-            foreach ($controllerResult as $blogPost) {
-                // Заберем только первую картинку к посту и прикрепим к mediaObjects.
-                $mediaObjects = $blogPost->getMediaObjects();
-                if (!empty($mediaObjects)) {
-                    /** @var MediaObject $mediaObjectFirst */
-                    $mediaObjectFirst = $mediaObjects[0];
-                    $blogPost->removeMediaObjectsAll();
-                    $mediaObjectFirst->contentUrl = $this->storage->resolveUri($mediaObjectFirst, 'file');
-                    $blogPost->addMediaObject($mediaObjectFirst);
-                }
-            }
-        } else {
-            /** @var BlogPost $blogPost */
-            $blogPost = $controllerResult;
+        if (!is_iterable($controllerResult)) {
+            $controllerResult = [$controllerResult];
+        }
+        /** @var BlogPost $blogPost */
+        foreach ($controllerResult as $blogPost) {
             foreach ($blogPost->getMediaObjects() as $mediaObject) {
                 $mediaObject->contentUrl = $this->storage->resolveUri($mediaObject, 'file');
             }
