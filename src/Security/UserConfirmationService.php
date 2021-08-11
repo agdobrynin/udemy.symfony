@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Exception\InvalidConfirmationTokenException;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -27,6 +28,6 @@ final class UserConfirmationService
             return;
         }
 
-        throw new NotFoundHttpException('User not found.');
+        throw new InvalidConfirmationTokenException('Confirmation token is invalid.');
     }
 }
