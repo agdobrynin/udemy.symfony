@@ -31,7 +31,8 @@ final class EmptyBodySubscriber implements EventSubscriberInterface
         $data = $event->getRequest()->get('data');
 
         if (null === $data) {
-            throw new EmptyBodyException('Body for POST/PUT request is empty');
+            $exception = new EmptyBodyException('Body for POST/PUT request is empty');
+            $event->setThrowable($exception);
         }
     }
 }
