@@ -18,11 +18,14 @@ class MediaObjectCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id'),
+            IdField::new('id')->hideOnForm(),
             TextField::new('fileName'),
             ImageField::new('fileName', 'Image Preview')
                 ->setBasePath($this->getParameter('app.path.media_objects'))
-                ->hideOnForm()
+                ->hideOnForm(),
+            ImageField::new('file')
+                ->setUploadDir($this->getParameter('app.path.upload.media_objects'))
+                ->hideOnIndex(),
         ];
     }
 }
