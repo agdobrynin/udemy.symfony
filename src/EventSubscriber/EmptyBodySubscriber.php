@@ -23,8 +23,10 @@ final class EmptyBodySubscriber implements EventSubscriberInterface
 
     public function handleEmptyBody(ExceptionEvent $event): void
     {
-        $method = $event->getRequest()->getMethod();
-        if (!in_array($method, [Request::METHOD_PUT, Request::METHOD_POST])) {
+        $request = $event->getRequest();
+        $contentType = $request->getContentType();
+        $method = $request->getMethod();
+        if (!in_array($method, [Request::METHOD_PUT, Request::METHOD_POST]) || in_array($contentType, ['html', 'form'])) {
             return;
         }
 

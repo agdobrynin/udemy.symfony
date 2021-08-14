@@ -232,7 +232,7 @@ class BlogPost implements AuthorEntityInterface
         $this->slug = $slug;
     }
 
-    public function getAuthor(): User
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
@@ -269,6 +269,16 @@ class BlogPost implements AuthorEntityInterface
         return $this->comments;
     }
 
+    public function addComment(Comment $comment): void
+    {
+        $this->comments->add($comment);
+    }
+
+    public function removeComment(Comment $comment): void
+    {
+        $this->comments->removeElement($comment);
+    }
+
     /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
@@ -280,5 +290,10 @@ class BlogPost implements AuthorEntityInterface
         if ($this->getCreatedAt() === null) {
             $this->setCreatedAt(new \DateTime());
         }
+    }
+
+    public function __toString(): ?string
+    {
+        return $this->id . ':' . $this->title . ' by ' . $this->getAuthor() ?? 'undefined yet';
     }
 }

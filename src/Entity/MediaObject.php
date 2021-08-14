@@ -99,4 +99,9 @@ class MediaObject
     {
         return $this->id;
     }
+
+    public function __toString(): ?string
+    {
+        return $this->id.':'.$this->fileName;
+    }
 }

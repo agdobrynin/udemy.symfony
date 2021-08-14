@@ -145,7 +145,7 @@ class Comment implements AuthorEntityInterface
         return $this;
     }
 
-    public function getAuthor(): User
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
@@ -157,7 +157,7 @@ class Comment implements AuthorEntityInterface
         return $this;
     }
 
-    public function getPost(): BlogPost
+    public function getPost(): ?BlogPost
     {
         return $this->post;
     }
@@ -210,5 +210,10 @@ class Comment implements AuthorEntityInterface
 
             $this->setIsPublished(false);
         }
+    }
+
+    public function __toString(): ?string
+    {
+        return $this->id . ':' . $this->content . ' by ' . $this->getAuthor()->getName() ?? 'not assign yet';
     }
 }
