@@ -4,7 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    app.path.media_objects: /images/media_objects
+    app.path.upload.media_objects: 'public%app.path.media_objects%'
 services:
     # default configuration for services in *this* file
     _defaults:
