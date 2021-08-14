@@ -197,7 +197,7 @@ class BlogPost implements AuthorEntityInterface
         return $this;
     }
 
-    public function getUpdateAt(): \DateTimeInterface
+    public function getUpdateAt(): ?\DateTimeInterface
     {
         return $this->updateAt;
     }
