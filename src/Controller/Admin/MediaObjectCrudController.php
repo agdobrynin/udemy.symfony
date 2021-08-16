@@ -4,9 +4,11 @@ namespace App\Controller\Admin;
 
 use App\Entity\MediaObject;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MediaObjectCrudController extends AbstractCrudController
 {
@@ -19,13 +21,12 @@ class MediaObjectCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('fileName'),
+            TextField::new('fileName')->hideOnForm(),
+            TextField::new('mimeType')->hideOnForm(),
             ImageField::new('fileName', 'Image Preview')
                 ->setBasePath($this->getParameter('app.path.media_objects'))
                 ->hideOnForm(),
-            ImageField::new('file')
-                ->setUploadDir($this->getParameter('app.path.upload.media_objects'))
-                ->hideOnIndex(),
+            Field::new('file')->setFormType(VichImageType::class)->hideOnIndex(),
         ];
     }
 }

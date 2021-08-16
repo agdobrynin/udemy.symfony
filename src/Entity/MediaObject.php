@@ -50,7 +50,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *         "get"
  *     }
  * )
- *  @Vich\Uploadable
+ * @Vich\Uploadable
  */
 class MediaObject
 {
@@ -77,7 +77,7 @@ class MediaObject
      * @Assert\NotNull(groups={"media_object_create"})
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="fileName")
      */
-    public $file;
+    private $file;
 
     /**
      * @var string|null
@@ -100,8 +100,24 @@ class MediaObject
         return $this->id;
     }
 
+    public function setFile($file): self
+    {
+        $this->file = $file;
+
+        if ($this->file instanceof File) {
+            $this->mimeType = $this->file->getMimeType() ?? '';
+        }
+
+        return $this;
+    }
+
+    public function getFile()
+    {
+        return $this->file;
+    }
+
     public function __toString(): ?string
     {
-        return $this->id.':'.$this->fileName;
+        return $this->id . ':' . $this->fileName;
     }
 }
