@@ -26,7 +26,7 @@ class BlogPostCrudController extends AbstractCrudController
             TextEditorField::new('content'),
             AssociationField::new('author'),
             AssociationField::new('mediaObjects'),
-            AssociationField::new('comments'),
+            AssociationField::new('comments')->setColumns(12),
         ];
     }
 }
