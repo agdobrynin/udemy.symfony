@@ -264,7 +264,7 @@ class BlogPost implements AuthorEntityInterface
         return $this;
     }
 
-    public function getComment(): Collection
+    public function getComments(): Collection
     {
         return $this->comments;
     }

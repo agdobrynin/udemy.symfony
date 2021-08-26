@@ -25,7 +25,8 @@ class BlogPostCrudController extends AbstractCrudController
             TextField::new('slug')->hideOnIndex(),
             TextEditorField::new('content'),
             AssociationField::new('author'),
-            CollectionField::new('media_objects')->hideOnIndex(),
+            AssociationField::new('mediaObjects'),
+            AssociationField::new('comments'),
         ];
     }
 }
