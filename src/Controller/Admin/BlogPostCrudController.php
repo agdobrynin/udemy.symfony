@@ -37,8 +37,12 @@ class BlogPostCrudController extends AbstractCrudController
             TextField::new('slug')->hideOnIndex(),
             TextEditorField::new('content'),
             AssociationField::new('author'),
-            AssociationField::new('mediaObjects'),
-            AssociationField::new('comments'),
+            AssociationField::new('mediaObjects')->hideOnDetail(),
+            AssociationField::new('mediaObjects')
+                ->hideOnIndex()->setTemplatePath('EasyAdminBundle/BlogPost/media_objects.html.twig'),
+            AssociationField::new('comments')->hideOnDetail(),
+            AssociationField::new('comments')
+                ->hideOnIndex()->setTemplatePath('EasyAdminBundle/BlogPost/comments.html.twig'),
         ];
     }
 }
