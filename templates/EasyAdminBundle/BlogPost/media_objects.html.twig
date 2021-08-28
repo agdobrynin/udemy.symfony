@@ -1,1 +1,16 @@
-Gallery for media objects
+<div class="container">
+    <div class="row">
+        {% for image in field.value %}
+            {% set uid = random(99999) ~ 'now'|date('U') ~ random(99999) %} {# crappy #}
+            <div data-label="Image Preview" class="col-lg-3 col-md-4 col-6 text-center field-image">
+                <a href="#" class="ea-lightbox-thumbnail" data-ea-lightbox-content-selector="#ea-lightbox-{{ uid }}">
+                    <img src="{{ vich_uploader_asset(image) }}" class="img-fluid">
+                </a>
+
+                <div id="ea-lightbox-{{ uid }}" class="ea-lightbox">
+                    <img src="{{ vich_uploader_asset(image) }}">
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

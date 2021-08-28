@@ -1,1 +1,11 @@
-List of comments
+<table class="table table-striped table-border">
+    <tr><th>ID</th><th>id:Author name</th><th>Comment</th><th>Created/Update date</th></tr>
+{% for comment in field.value %}
+    <tr class="{{ comment.isPublished ? 'text-success' : 'text-danger'}}">
+        <td>{{ comment.id }}</td>
+        <td>{{ comment.author }}</td>
+        <td>{{ comment.content }}</td>
+        <td>{{ comment.createdAt|date("d.m.Y H:i.s") }} / {{ comment.updateAt|date("d.m.Y H:i.s") }}</td>
+    </tr>
+{% endfor %}
+</table>
