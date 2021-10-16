@@ -66,7 +66,7 @@ class AppFixtures extends Fixture
                 copy($file, $tmpFile);
                 $fileUploaded = new UploadedFile($tmpFile, $entry, $mimeType, null, true);
                 $mediaObject = new MediaObject();
-                $mediaObject->file = $fileUploaded;
+                $mediaObject->setFile($fileUploaded);
                 $mediaObject->mimeType = $mimeType;
                 $manager->persist($mediaObject);
                 $refKey = "media_object_{$file}";

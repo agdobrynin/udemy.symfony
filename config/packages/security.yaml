@@ -30,9 +30,19 @@ security:
                 authenticators:
                     - App\Security\TokenAuthenticator
             user_checker: App\Security\UserIsActiveChecker
-
+        admin:
+            pattern: ^/
+            form_login:
+                check_path: security_login
+                login_path: security_login
+                default_target_path: admin
+                use_referer: true
+            logout:
+                path: security_logout
     access_control:
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/api/,       roles: IS_AUTHENTICATED_FULLY }
 #        - { path: ^/api,       roles: IS_AUTHENTICATED_ANONYMOUSLY }
     role_hierarchy:

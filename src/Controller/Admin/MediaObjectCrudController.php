@@ -8,8 +8,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
+/**
+ * @IsGranted("ROLE_ADMIN")
+ */
 class MediaObjectCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
