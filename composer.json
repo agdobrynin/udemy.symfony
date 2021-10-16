@@ -40,7 +40,8 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "fzaninotto/faker": "^1.9",
-        "symfony/maker-bundle": "^1.31"
+        "symfony/maker-bundle": "^1.31",
+        "symfony/phpunit-bridge": "^5.3"
     },
     "config": {
         "optimize-autoloader": true,
