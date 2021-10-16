@@ -6,6 +6,7 @@ namespace App\Tests\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\BlogPost;
+use App\Entity\Comment;
 use App\Entity\MediaObject;
 use App\Entity\User;
 use App\EventSubscriber\AuthorEntitySubscriber;
@@ -37,6 +38,7 @@ class AuthorEntitySubscriberTest extends TestCase
     {
         return [
             [BlogPost::class, Request::METHOD_POST, true],
+            [Comment::class, Request::METHOD_POST, true],
             [MediaObject::class, Request::METHOD_POST, false],
             [BlogPost::class, Request::METHOD_GET, false],
         ];
