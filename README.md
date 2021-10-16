@@ -20,3 +20,9 @@ Endpoint для авторизации и получения JWT токена `/
     "password": "SaSa145"
 }
 ```
+### Запуск Unit тестов
+```shell
+# php bin/phpunit
+```
+### Доступ в EasyAdmin
+`http://localhost:8000/admin` авторизация под пользователем **nyasia** c дефолтным паролем **SaSa145**
