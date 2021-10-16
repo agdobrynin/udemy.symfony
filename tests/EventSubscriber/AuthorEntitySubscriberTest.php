@@ -20,13 +20,10 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class AuthorEntitySubscriberTest extends TestCase
 {
-    private $token;
-
     public function setUp(): void
     {
         parent::setUp();
         BypassFinals::enable();
-        $this->token = $this->getTokenStorageMock();
     }
 
     public function testConfigSubscriber()
@@ -52,19 +49,28 @@ class AuthorEntitySubscriberTest extends TestCase
     {
         $entityMock = $this->getEntityMock($entityClassName, $shouldBeSetAuthor);
         $eventMock = $this->getEventMock($httpMethod, $entityMock);
-        (new AuthorEntitySubscriber($this->token))->getAuthUser($eventMock);
+        $token = $this->getTokenStorageMock();
+        (new AuthorEntitySubscriber($token))->getAuthUser($eventMock);
+    }
+
+    public function testNoToken()
+    {
+        $token = $this->getTokenStorageMock(false);
+        $eventMock = $this->getEventMock(Request::METHOD_POST, new class {});
+        (new AuthorEntitySubscriber($token))->getAuthUser($eventMock);
     }
 
     /**
      * @return MockObject|TokenStorageInterface
      */
-    private function getTokenStorageMock()
+    private function getTokenStorageMock(bool $hasToken = true)
     {
         $tokenMock = $this->getMockBuilder(TokenInterface::class)->getMockForAbstractClass();
-        $tokenMock->method('getUser')->willReturn(new User());
+        $tokenMock->expects($hasToken ? $this->once() : $this->never())
+            ->method('getUser')->willReturn(new User());
 
         $tokenStorageMock = $this->getMockBuilder(TokenStorageInterface::class)->getMockForAbstractClass();
-        $tokenStorageMock->method('getToken')->willReturn($tokenMock);
+        $tokenStorageMock->method('getToken')->willReturn($hasToken ? $tokenMock : null);
 
         return $tokenStorageMock;
     }
