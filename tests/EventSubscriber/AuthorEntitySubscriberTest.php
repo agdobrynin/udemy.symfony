@@ -6,6 +6,7 @@ namespace App\Tests\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\BlogPost;
+use App\Entity\MediaObject;
 use App\Entity\User;
 use App\EventSubscriber\AuthorEntitySubscriber;
 use DG\BypassFinals;
@@ -35,19 +36,23 @@ class AuthorEntitySubscriberTest extends TestCase
         $this->assertEquals(['getAuthUser', EventPriorities::PRE_VALIDATE], $res[KernelEvents::VIEW]);
     }
 
-    public function testSetAuthorCall()
+    public function dataProvider(): array
     {
-        $entityMock = $this->getEntityMock(BlogPost::class, true);
-        $eventMock = $this->getEventMock(Request::METHOD_POST, $entityMock);
-        (new AuthorEntitySubscriber($this->token))->getAuthUser($eventMock);
+        return [
+            [BlogPost::class, Request::METHOD_POST, true],
+            [MediaObject::class, Request::METHOD_POST, false],
+            [BlogPost::class, Request::METHOD_GET, false],
+        ];
     }
 
-    public function testSetAuthorNoCall()
+    /**
+     * @dataProvider dataProvider
+     */
+    public function testSetAuthorCall(string $entityClassName, string $httpMethod, bool $shouldBeSetAuthor)
     {
-        $entityMock = $this->getEntityMock('NonExistClass', false);
-        $eventMock = $this->getEventMock(Request::METHOD_GET, $entityMock);
+        $entityMock = $this->getEntityMock($entityClassName, $shouldBeSetAuthor);
+        $eventMock = $this->getEventMock($httpMethod, $entityMock);
         (new AuthorEntitySubscriber($this->token))->getAuthUser($eventMock);
-
     }
 
     /**
@@ -84,8 +89,7 @@ class AuthorEntitySubscriberTest extends TestCase
     private function getEntityMock(string $className, bool $shouldBeSetAuthor): MockObject
     {
         $entityMock = $this->getMockBuilder($className)->setMethods(['setAuthor'])->getMock();
-        $entityMock->expects($shouldBeSetAuthor ? $this->once() : $this->never())
-            ->method('setAuthor');
+        $entityMock->expects($shouldBeSetAuthor ? $this->once() : $this->never())->method('setAuthor');
 
         return $entityMock;
     }
