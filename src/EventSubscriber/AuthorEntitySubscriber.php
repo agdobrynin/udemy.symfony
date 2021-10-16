@@ -34,12 +34,18 @@ final class AuthorEntitySubscriber implements EventSubscriberInterface
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
         $token = $this->tokenStorage->getToken();
-        $availableMethod = $method === Request::METHOD_POST;
 
-        if (null === $token || !$entity instanceof AuthorEntityInterface || !$availableMethod) {
+        if (null === $token) {
             return;
         }
 
-        $entity->setAuthor($token->getUser());
+        $availableMethod = $method === Request::METHOD_POST;
+        $user = $token->getUser();
+
+        if (!$entity instanceof AuthorEntityInterface || !$availableMethod) {
+            return;
+        }
+
+        $entity->setAuthor($user);
     }
 }
