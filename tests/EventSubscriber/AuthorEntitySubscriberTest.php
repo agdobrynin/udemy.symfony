@@ -12,6 +12,7 @@ use App\Entity\User;
 use App\EventSubscriber\AuthorEntitySubscriber;
 use DG\BypassFinals;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Rule\InvokedCount;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -37,27 +38,27 @@ class AuthorEntitySubscriberTest extends TestCase
     public function dataProvider(): array
     {
         return [
-            [BlogPost::class, Request::METHOD_POST, true],
-            [Comment::class, Request::METHOD_POST, true],
-            [MediaObject::class, Request::METHOD_POST, false],
-            [BlogPost::class, Request::METHOD_GET, false],
+            [BlogPost::class, Request::METHOD_POST, $this->once()],
+            [Comment::class, Request::METHOD_POST, $this->once()],
+            [MediaObject::class, Request::METHOD_POST, $this->never()],
+            [BlogPost::class, Request::METHOD_GET, $this->never()],
         ];
     }
 
     /**
      * @dataProvider dataProvider
      */
-    public function testSetAuthorCall(string $entityClassName, string $httpMethod, bool $shouldBeSetAuthor)
+    public function testSetAuthorCall(string $entityClassName, string $httpMethod, InvokedCount $shouldBeSetAuthor)
     {
         $entityMock = $this->getEntityMock($entityClassName, $shouldBeSetAuthor);
         $eventMock = $this->getEventMock($httpMethod, $entityMock);
-        $token = $this->getTokenStorageMock();
+        $token = $this->getTokenStorageMock($this->once());
         (new AuthorEntitySubscriber($token))->getAuthUser($eventMock);
     }
 
     public function testNoToken()
     {
-        $token = $this->getTokenStorageMock(false);
+        $token = $this->getTokenStorageMock($this->never());
         $eventMock = $this->getEventMock(Request::METHOD_POST, new class {});
         (new AuthorEntitySubscriber($token))->getAuthUser($eventMock);
     }
@@ -65,14 +66,17 @@ class AuthorEntitySubscriberTest extends TestCase
     /**
      * @return MockObject|TokenStorageInterface
      */
-    private function getTokenStorageMock(bool $hasToken = true)
+    private function getTokenStorageMock(InvokedCount $invokedCount)
     {
-        $tokenMock = $this->getMockBuilder(TokenInterface::class)->getMockForAbstractClass();
-        $tokenMock->expects($hasToken ? $this->once() : $this->never())
-            ->method('getUser')->willReturn(new User());
+        $tokenMock = null;
+
+        if (!$invokedCount->isNever()) {
+            $tokenMock = $this->getMockBuilder(TokenInterface::class)->getMockForAbstractClass();
+            $tokenMock->expects($invokedCount)->method('getUser')->willReturn(new User());
+        }
 
         $tokenStorageMock = $this->getMockBuilder(TokenStorageInterface::class)->getMockForAbstractClass();
-        $tokenStorageMock->method('getToken')->willReturn($hasToken ? $tokenMock : null);
+        $tokenStorageMock->method('getToken')->willReturn($tokenMock);
 
         return $tokenStorageMock;
     }
@@ -94,10 +98,10 @@ class AuthorEntitySubscriberTest extends TestCase
         return $eventMock;
     }
 
-    private function getEntityMock(string $className, bool $shouldBeSetAuthor): MockObject
+    private function getEntityMock(string $className, InvokedCount $invocationOrder): MockObject
     {
         $entityMock = $this->getMockBuilder($className)->setMethods(['setAuthor'])->getMock();
-        $entityMock->expects($shouldBeSetAuthor ? $this->once() : $this->never())->method('setAuthor');
+        $entityMock->expects($invocationOrder)->method('setAuthor');
 
         return $entityMock;
     }
