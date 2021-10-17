@@ -6,10 +6,11 @@ namespace App\Security;
 
 use App\Exception\InvalidConfirmationTokenException;
 use App\Repository\UserRepository;
+use App\Security\Interfaces\UserConfirmationServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
-final class UserConfirmationService
+class UserConfirmationService implements UserConfirmationServiceInterface
 {
     private $userRepository;
     private $entityManager;
@@ -21,7 +22,8 @@ final class UserConfirmationService
         $this->entityManager = $entityManager;
         $this->logger = $logger;
     }
-    public function confirmUser(string $confirmToken)
+
+    public function confirmUser(string $confirmToken): void
     {
         if ($user = $this->userRepository->findOneByConfirmToken($confirmToken)) {
             $this->logger->debug(sprintf('User found "%s" with login "%s" and email "%s"', $user->getName(), $user->getLogin(), $user->getEmail()));
