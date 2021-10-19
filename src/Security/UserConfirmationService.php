@@ -16,7 +16,7 @@ class UserConfirmationService implements UserConfirmationServiceInterface
     private $entityManager;
     private $logger;
 
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager, LoggerInterface $logger)
+    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager, ?LoggerInterface $logger = null)
     {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
@@ -26,14 +26,20 @@ class UserConfirmationService implements UserConfirmationServiceInterface
     public function confirmUser(string $confirmToken): void
     {
         if ($user = $this->userRepository->findOneByConfirmToken($confirmToken)) {
-            $this->logger->debug(sprintf('User found "%s" with login "%s" and email "%s"', $user->getName(), $user->getLogin(), $user->getEmail()));
+            if ($this->logger) {
+                $this->logger->debug(sprintf('User found "%s" with login "%s" and email "%s"', $user->getName(), $user->getLogin(), $user->getEmail()));
+            }
+
             $user->setIsActive(true);
             $user->setConfirmationToken(null);
             $this->entityManager->flush();
             return;
         }
 
-        $this->logger->debug(sprintf('User not found by token "%s"', $confirmToken));
+        if ($this->logger) {
+            $this->logger->debug(sprintf('User not found by token "%s"', $confirmToken));
+        }
+
         throw new InvalidConfirmationTokenException('Confirmation token is invalid.');
     }
 }
