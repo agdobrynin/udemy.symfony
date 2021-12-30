@@ -7,8 +7,9 @@
 # php bin/console doctrine:migrations:migrate
 ```
 ### Заполнить тестовыми данными таблицы
+(!) Затрёт все изменения в базе данных:
 ```shell
-# php bin/console doctrine:fixtures:load
+# php bin/console doctrine:fixtures:load -q
 ```
 Тестовый пароль у всех пользователей в таблице `user` `SaSa145`
 
