@@ -37,7 +37,11 @@ class AppFixtures extends Fixture
     {
         $this->userPasswordHasher = $userPasswordHasher;
         $this->faker = Factory::create();
-        $this->users[] = (new FixtureUser('nyasia01@hotmail.com', 'nyasia'))->setRoles([User::ROLE_ADMIN]);
+        // Admin user
+        $admin = (new FixtureUser('nyasia01@hotmail.com', FixtureUser::ADMIN_LOGIN))->setRoles([User::ROLE_ADMIN]);
+        $admin->setPassword(FixtureUser::ADMIN_PASSWORD);
+        $this->users[] = $admin;
+        // Other users
         $this->users[] = (new FixtureUser('utillman@rohan.org', 'utillman'))->setRoles([User::ROLE_USER, User::ROLE_MODERATOR]);
         $this->users[] = (new FixtureUser('kebert@connelly.info', 'kebert', false))->setRoles([User::ROLE_USER]);
         $this->users[] = (new FixtureUser('vanessa90@gmail.com', 'vanessa90'))->setRoles([User::ROLE_MODERATOR]);
@@ -134,7 +138,7 @@ class AppFixtures extends Fixture
                 $user->setConfirmationToken($this->generator->getRandomSecureToken());
             }
 
-            $user->setPassword($this->userPasswordHasher->hashPassword($user, $userSrc->password));
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, $userSrc::ADMIN_PASSWORD));
             $refKey = 'user.id.' . $index;
             $this->addReference($refKey, $user);
             $this->referenceUserKeys[] = $refKey;
