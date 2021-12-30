@@ -79,7 +79,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     fields={"email"},
  *     message="Такой email уже используется в системе. Укажите другой email"
  * )
- * @method string getUserIdentifier()
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -420,6 +419,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->confirmationToken = $confirmationToken;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): ?string
+    {
+        return $this->getLogin();
     }
 
     public function __toString(): ?string
