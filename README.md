@@ -1,3 +1,7 @@
+### Курс по Symfony ApiPlatform
+Learn how to make [REST API in Symfony using API Platform](https://www.udemy.com/course/symfony-api-platform-reactjs-full-stack-masterclass)
+
+
 ### Создать JWT сертификаты
 ```shell
 # php bin/console lexik:jwt:generate-keypair
