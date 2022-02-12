@@ -21,8 +21,11 @@ Endpoint для авторизации и получения JWT токена `/
     "password": "SaSa145"
 }
 ```
-### Запуск Unit тестов
+### Запуск тестов
+Заполнить тестовыми данными перед тестом
 ```shell
+# php php bin/console doctrine:migrations:migrate
+# php bin/console doctrine:fixtures:load -q
 # php bin/phpunit
 ```
 ### Доступ в EasyAdmin
