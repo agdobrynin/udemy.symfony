@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Services;
+namespace App\Tests\Services;
 
 use App\Entity\User;
 use App\Repository\UserRepository;

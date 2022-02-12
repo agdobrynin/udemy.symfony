@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\EventSubscriber;
+namespace App\Tests\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\User;
@@ -10,7 +10,6 @@ use App\Entity\UserConfirmation;
 use App\EventSubscriber\UserConfirmationSubscriber;
 use App\Security\TokenGenerator;
 use App\Security\UserConfirmationService;
-use App\Tests\EventSubscriber\MockObject;
 use PHPUnit\Framework\MockObject\Rule\InvokedCount;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
