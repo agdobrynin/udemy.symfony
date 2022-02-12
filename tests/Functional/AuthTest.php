@@ -11,27 +11,27 @@ class AuthTest extends ApiTestCase
 {
     private const ENDPOINT_AUTH = '/api/login_check';
 
-    public function authProvider(): array
+    public function testAuthSuccess(): void
     {
-        return [
-            [FixtureUser::ADMIN_LOGIN, FixtureUser::ADMIN_PASSWORD, 200],
-            ['x', 'x', 401],
-        ];
+        $client = static::createClient();
+        $client->request('POST', self::ENDPOINT_AUTH, static::getData(FixtureUser::ADMIN_LOGIN, FixtureUser::ADMIN_PASSWORD));
+        $this->assertResponseIsSuccessful();
     }
 
-    /**
-     * @dataProvider authProvider
-     */
-    public function testAuthCheck(string $login, string $password, int $statusCode): void
+    public function testAuthFail(): void
     {
-        $response = static::createClient()
-            ->request('POST', self::ENDPOINT_AUTH, ['json' => ['username' => $login, 'password' => $password]]);
+        $client = static::createClient();
+        $client->request('POST', self::ENDPOINT_AUTH, static::getData('user', '----lalala---'));
+        $this->assertResponseStatusCodeSame(401);
+    }
 
-        if (200 === $response->getStatusCode()) {
-            $this->assertArrayHasKey('token', json_decode($response->getContent(false), true));
-
-        }
-
-        $this->assertResponseStatusCodeSame($statusCode);
+    private static function getData(string $login, string $password): array
+    {
+        return  [
+            'json' => [
+                'username' => $login,
+                'password' => $password,
+            ],
+        ];
     }
 }
