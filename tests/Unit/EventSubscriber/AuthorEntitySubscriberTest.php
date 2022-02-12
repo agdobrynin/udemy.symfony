@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EventSubscriber;
+namespace App\Tests\Unit\EventSubscriber;
 
 use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\BlogPost;
@@ -22,12 +22,6 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class AuthorEntitySubscriberTest extends TestCase
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-        BypassFinals::enable();
-    }
-
     public function testConfigSubscriber()
     {
         $res = AuthorEntitySubscriber::getSubscribedEvents();
@@ -37,6 +31,8 @@ class AuthorEntitySubscriberTest extends TestCase
 
     public function dataProvider(): array
     {
+        BypassFinals::enable();
+
         return [
             [BlogPost::class, Request::METHOD_POST, $this->once()],
             [Comment::class, Request::METHOD_POST, $this->once()],
