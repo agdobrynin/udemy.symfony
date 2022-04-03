@@ -1,5 +1,7 @@
-### Курс по Symfony ApiPlatform
-Learn how to make [REST API in Symfony using API Platform](https://www.udemy.com/course/symfony-api-platform-reactjs-full-stack-masterclass)
+### Курс Symfony API Platform with React Full Stack Masterclass
+🔑 Learn how to make [REST API in Symfony using API Platform](https://www.udemy.com/course/symfony-api-platform-reactjs-full-stack-masterclass)
+
+🏃 Дополнительно в курсе представлено создание [фронт-приложения на Rect](https://github.com/agdobrynin/api-platform-react-app-course)
 
 
 ### Создать JWT сертификаты
