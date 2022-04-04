@@ -1,9 +1,10 @@
 {# templates/emails/signup.html.twig #}
-<h1>Welcome {{ user.getName }}!</h1>
+<h1>Welcome {{ user.getName() }}!</h1>
 
 <p>
     You signed up as <strong>{{ user.getLogin }}</strong> the following email: <strong>{{ user.getEmail }}</strong>
 </p>
 <p>
-    <a href="{{ url('user_confirm_from_email', {'token': user.getConfirmationToken}) }}">Click here to activate your account</a>
+    <a href="{{ url('user_confirm_from_email', {'token': user.getConfirmationToken()}) }}">Click here to activate your account</a>
 </p>
+<p> You can enter confirmation token <b>{{ user.getConfirmationToken() }}</b> inside special form on our blog service</p>
