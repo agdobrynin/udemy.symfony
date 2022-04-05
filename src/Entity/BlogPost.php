@@ -104,6 +104,7 @@ class BlogPost implements AuthorEntityInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      * @Assert\Length(min=10)
      * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author", "read_post:full"})
      */
@@ -130,6 +131,7 @@ class BlogPost implements AuthorEntityInterface
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank
      * @Assert\Length(min=140)
      * @Groups({"put:write", "put:read", "post:write", "get:read_post:with_author", "read_post:full"})
      */
