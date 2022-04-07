@@ -20,6 +20,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *      normalizationContext={
  *          "groups"={"media_object_read"}
  *      },
+ *     attributes={
+ *          "order"={"id": "DESC"},
+ *          "formats"={"jsonld", "json", "form"={"multipart/form-data"}},
+ *     },
  *      collectionOperations={
  *         "post"={
  *             "controller"=CreateMediaObjectAction::class,
@@ -47,7 +51,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *         "get"
  *     },
  *     itemOperations={
- *         "get"
+ *         "get",
+ *          "delete"={
+ *              "access_control"="is_granted('ROLE_USER')",
+ *          },
  *     }
  * )
  * @Vich\Uploadable
