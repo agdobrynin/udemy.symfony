@@ -77,7 +77,7 @@ class MediaObject
      * @Assert\NotNull(groups={"media_object_create"})
      * @Vich\UploadableField(mapping="media_object", fileNameProperty="fileName")
      */
-    private $file;
+    public $file;
 
     /**
      * @var string|null
@@ -111,7 +111,7 @@ class MediaObject
         return $this;
     }
 
-    public function getFile()
+    public function getFile(): ?File
     {
         return $this->file;
     }
