@@ -17,14 +17,23 @@
 ```shell
 # php bin/console doctrine:fixtures:load -q
 ```
-Тестовый пароль у всех пользователей в таблице `user` `SaSa145`
+Логин и пароль администратора блога задается в файле `.env`
+в переменных
+```text
+FIXTURE_ADMIN_LOGIN
+FIXTURE_ADMIN_PASSWORD
+```
+Пароль для остальных по пользователей установлен в переменной
+```text
+FIXTURE_USER_PASSWORD
+```
 
 Endpoint для авторизации и получения JWT токена `/api/login_check`
 отправлять json body
 ```json
 {
-    "username": "nyasia",
-    "password": "SaSa145"
+    "username": "login",
+    "password": "password"
 }
 ```
 ### Запуск тестов
@@ -35,4 +44,8 @@ Endpoint для авторизации и получения JWT токена `/
 # php bin/phpunit
 ```
 ### Доступ в EasyAdmin
-`http://localhost:8000/admin` авторизация под пользователем **nyasia** c дефолтным паролем **SaSa145**
+`http://localhost:8000/admin` авторизация под администратором блога по паре логин и пароль заданным в `.env` файле 
+```text
+FIXTURE_ADMIN_LOGIN
+FIXTURE_ADMIN_PASSWORD
+```

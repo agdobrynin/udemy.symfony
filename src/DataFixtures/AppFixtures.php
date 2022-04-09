@@ -12,6 +12,7 @@ use App\Security\TokenGenerator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -33,20 +34,31 @@ class AppFixtures extends Fixture
     private $faker;
     private $generator;
 
-    public function __construct(UserPasswordHasherInterface $userPasswordHasher, TokenGenerator $generator)
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher, TokenGenerator $generator, ContainerBagInterface $container)
     {
         $this->userPasswordHasher = $userPasswordHasher;
         $this->faker = Factory::create();
         // Admin user
-        $admin = (new FixtureUser('nyasia01@hotmail.com', FixtureUser::ADMIN_LOGIN))->setRoles([User::ROLE_ADMIN]);
-        $admin->setPassword(FixtureUser::ADMIN_PASSWORD);
+        $admin = (new FixtureUser('nyasia01@hotmail.com', $container->get('app.fixture.admin.login')))
+            ->setRoles([User::ROLE_ADMIN]);
+        $admin->setPassword($container->get('app.fixture.admin.password'));
+
         $this->users[] = $admin;
         // Other users
-        $this->users[] = (new FixtureUser('utillman@rohan.org', 'utillman'))->setRoles([User::ROLE_USER, User::ROLE_MODERATOR]);
-        $this->users[] = (new FixtureUser('kebert@connelly.info', 'kebert', false))->setRoles([User::ROLE_USER]);
-        $this->users[] = (new FixtureUser('vanessa90@gmail.com', 'vanessa90'))->setRoles([User::ROLE_MODERATOR]);
-        $this->users[] = (new FixtureUser('hauck.celia@friesen.com', 'hauck.celia'))->setRoles([User::ROLE_USER]);
+        for ($i = 0; $i < 5; $i++) {
+            $this->users[] = $this->userRandom($container->get('app.fixture.user.password'));
+        }
+
         $this->generator = $generator;
+    }
+
+    public function userRandom(string $password): FixtureUser
+    {
+        $role = User::ALL_ROLES[array_rand(User::ALL_ROLES)];
+
+        return (new FixtureUser($this->faker->email, $this->faker->userName))
+            ->setRoles([$role])
+            ->setPassword($password);
     }
 
     public function load(ObjectManager $manager)
@@ -138,7 +150,7 @@ class AppFixtures extends Fixture
                 $user->setConfirmationToken($this->generator->getRandomSecureToken());
             }
 
-            $user->setPassword($this->userPasswordHasher->hashPassword($user, $userSrc::ADMIN_PASSWORD));
+            $user->setPassword($this->userPasswordHasher->hashPassword($user, $userSrc->password));
             $refKey = 'user.id.' . $index;
             $this->addReference($refKey, $user);
             $this->referenceUserKeys[] = $refKey;

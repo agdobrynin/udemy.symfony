@@ -6,6 +6,9 @@
 parameters:
     app.path.media_objects: /images/media_objects
     app.path.upload.media_objects: 'public%app.path.media_objects%'
+    app.fixture.admin.login: '%env(string:FIXTURE_ADMIN_LOGIN)%'
+    app.fixture.admin.password: '%env(string:FIXTURE_ADMIN_PASSWORD)%'
+    app.fixture.user.password: '%env(string:FIXTURE_USER_PASSWORD)%'
 services:
     # default configuration for services in *this* file
     _defaults:

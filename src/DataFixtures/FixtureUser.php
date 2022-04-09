@@ -8,11 +8,9 @@ use App\Entity\User;
 
 class FixtureUser
 {
-    public const ADMIN_LOGIN = 'nyasia';
-    public const ADMIN_PASSWORD = 'SaSa145';
     public $email;
     public $login;
-    public $password = 'SaSa145';
+    public $password;
     public $roles = [User::ROLE_USER];
     public $isActive;
     public $confirmationToken = null;
