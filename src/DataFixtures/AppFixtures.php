@@ -40,8 +40,8 @@ class AppFixtures extends Fixture
         $this->faker = Factory::create();
         // Admin user
         $admin = (new FixtureUser('nyasia01@hotmail.com', $container->get('app.fixture.admin.login')))
-            ->setRoles([User::ROLE_ADMIN]);
-        $admin->setPassword($container->get('app.fixture.admin.password'));
+            ->setRoles([User::ROLE_ADMIN])
+            ->setPassword($container->get('app.fixture.admin.password'));
 
         $this->users[] = $admin;
         // Other users
