@@ -1,6 +1,8 @@
 ### Курс Symfony API Platform with React Full Stack Masterclass
 🔑 Learn how to make [REST API in Symfony using API Platform](https://www.udemy.com/course/symfony-api-platform-reactjs-full-stack-masterclass)
 
+📂 [Сертификат об успешном прохождении курса.](https://www.udemy.com/certificate/UC-317e088d-fdc4-4c28-a2d8-0c338592bced/)
+
 🏃 Дополнительно в курсе представлено создание [фронт-приложения на Rect](https://github.com/agdobrynin/api-platform-react-app-course)
 
 
